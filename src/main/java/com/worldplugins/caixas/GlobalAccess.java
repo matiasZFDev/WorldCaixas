@@ -1,4 +1,4 @@
-package com.worldplugins.plugin;
+package com.worldplugins.caixas;
 
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
 import com.worldplugins.lib.config.cache.impl.MessagesConfig;

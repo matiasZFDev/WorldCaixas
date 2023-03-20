@@ -1,11 +1,11 @@
-package com.worldplugins.plugin;
+package com.worldplugins.caixas;
 
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
 import com.worldplugins.lib.config.cache.impl.MessagesConfig;
 import com.worldplugins.lib.config.cache.impl.SoundsConfig;
 import com.worldplugins.lib.registry.CommandRegistry;
 import com.worldplugins.lib.registry.ViewRegistry;
-import com.worldplugins.plugin.init.ConfigCacheInitializer;
+import com.worldplugins.caixas.init.ConfigCacheInitializer;
 import com.worldplugins.lib.manager.config.ConfigCacheManager;
 import com.worldplugins.lib.manager.config.ConfigManager;
 import com.worldplugins.lib.manager.config.YamlConfigManager;

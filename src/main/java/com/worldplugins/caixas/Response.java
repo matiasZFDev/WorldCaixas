@@ -1,4 +1,4 @@
-package com.worldplugins.plugin;
+package com.worldplugins.caixas;
 
 import com.worldplugins.lib.config.response.message.SubjectMessage;
 import com.worldplugins.lib.extension.GenericExtensions;

@@ -1,8 +1,8 @@
-package com.worldplugins.plugin.extension;
+package com.worldplugins.caixas.extension;
 
 import com.worldplugins.lib.config.response.message.SubjectMessage;
 import com.worldplugins.lib.extension.GenericExtensions;
-import com.worldplugins.plugin.Response;
+import com.worldplugins.caixas.Response;
 import lombok.NonNull;
 import lombok.experimental.ExtensionMethod;
 import org.bukkit.command.CommandSender;

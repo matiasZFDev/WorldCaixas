@@ -1,4 +1,4 @@
-package com.worldplugins.plugin.init;
+package com.worldplugins.caixas.init;
 
 import com.worldplugins.lib.common.Factory;
 import com.worldplugins.lib.common.Initializer;

@@ -1,8 +1,8 @@
-package com.worldplugins.plugin;
+package com.worldplugins.caixas;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class WorldPlugin extends JavaPlugin {
+public class WorldCaixas extends JavaPlugin {
     private Runnable onDisable;
 
     @Override

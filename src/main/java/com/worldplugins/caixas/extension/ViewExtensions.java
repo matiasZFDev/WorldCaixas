@@ -1,8 +1,8 @@
-package com.worldplugins.plugin.extension;
+package com.worldplugins.caixas.extension;
 
 import com.worldplugins.lib.view.View;
 import com.worldplugins.lib.view.ViewContext;
-import com.worldplugins.plugin.GlobalAccess;
+import com.worldplugins.caixas.GlobalAccess;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
 
