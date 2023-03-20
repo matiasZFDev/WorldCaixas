@@ -1,0 +1,6 @@
+name: WorldCaixas
+main: com.worldplugins.caixas.WorldCaixas
+version: 1.0
+authors: [PostDev]
+api-version: 1.8
+depend: [WorldLib]
