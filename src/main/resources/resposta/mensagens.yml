@@ -80,5 +80,9 @@
 # * As mensagens são recarregadas por completo no reload.
 # * Pode mudar os tipos a vontade.
 # * O valor da placeholder não é afetado pelo tipo de mensagem. Pode utilizar qual você quiser.
-Localizador-caixa-inexistente: "&cCaixa &n@tipo&c não identificada. Tipos registrados: @lista"
-Localizador-entrego: '&aLocalizador da caixa &n@tipo&a foi entrego.'
+Jogador-offline: '&cO jogador @jogador se encontra offline.'
+Quantia-invalida: '&cInsira uma quantia válida.'
+Caixa-inexistente: "&cCaixa &n@tipo&c não identificada. Tipos registrados: @lista."
+Localizador-entrego: '&fLocalizador da caixa &7@tipo&f foi entrego.'
+Chaves-enviadas: '&fVocê enviou &a@quantiax &fchaves &7@tipo &fpro jogador &a@jogador!'
+Chaves-recebidas: '&fVocê recêbeu &a@quantiax &fchaves &7@tipo&f!'

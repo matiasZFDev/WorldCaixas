@@ -48,7 +48,7 @@ public class GiveLocator implements CommandModule {
             final String types = mainConfig.get().getCrates().getAll().stream()
                 .map(MainConfig.Config.Crate::getId)
                 .collect(Collectors.joining());
-            player.respond("Localizador-caixa-inexistente", message -> message.replace(
+            player.respond("Caixa-inexistente", message -> message.replace(
                 "@tipo".to(crateId),
                 "@lista".to(types)
             ));

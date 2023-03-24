@@ -1,5 +1,6 @@
 package com.worldplugins.caixas;
 
+import com.worldplugins.caixas.command.GiveKey;
 import com.worldplugins.caixas.command.GiveLocator;
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
@@ -72,9 +73,11 @@ public class PluginWaiter {
     private void registerCommands() {
         final CommandRegistry registry = new CommandRegistry(plugin);
         final MainConfig mainConfig = configCacheManager.get(MainConfig.class);
+        final KeyFactory keyFactory = new KeyFactory(mainConfig);
 
         registry.command(
-            new GiveLocator(mainConfig)
+            new GiveLocator(mainConfig),
+            new GiveKey(keyFactory, mainConfig)
         );
         registry.registerAll();
     }
