@@ -1,0 +1,142 @@
+Localizador-iten:
+  Skull-url: 'https://textures.minecraft.net/texture/edc36c9cb50a527aa55607a0df7185ad20aabaa903e8d9abfc78260705540def'
+  nome: '&aLocalizador de caixa'
+  lore:
+    - '&7Use esse iten para'
+    - '&7localizar a caixa'
+    - '&7correspondente.'
+    - ''
+    - ' &fID: &7{id}'
+    - ''
+    - '&aClique para localizar'
+
+# Configuração de uma caixa.
+#
+# Caixas:
+#   <nome da caixa>:
+#     Id: <id da caixa>
+#     Holograma:
+#       - 'holograma'
+#       - 'da'
+#       - 'caixa'
+#     Representacao:
+#       (para um bloco)
+#       Id: <id do bloco>
+#       Data: <data do bloco>
+#
+#       (para uma caveça)
+#       Skull-url: <url da caveça>
+#     Chave-iten: {iten da chave}
+#     Animacoes:
+#       <nome do seu efeito>:
+#         (DROP: Dropar itens em uma velocidade a cada certo intervalo, com uma pausa)
+#         (EXEMPLO)
+#         Tipo: drop
+#         Itens:
+#           Iten-1: { Id: 1 }
+#           Iten-2: { Id: 2 }
+#           Iten-3: { Id: 3 }
+#         Vida-iten: 15 *Vida util do iten em ticks
+#         Delay: 10 *Delay por cada spawn de iten
+#         Repeticoes: 15 *Repetições por cada rodada (entre cada pausa)
+#         Pausa: 70 *Tempo de cada pausa em ticks
+#
+#         (EFEITO: Gerar um efeito visual)
+#         (EXEMPLO)
+#         Tipo: efeito
+#         Posicao: { x: 0, y: 0, z: 0 }
+#           (Adições/substrações das coordenadas x, y, z do origem, a caixa)
+#         Id: <id do efeito> Mais informações sobre em https://helpch.at/docs/1.8.8/index.html?org/bukkit/Effect.html
+#         Repeticao: 60 *Tempo de cada repeticao em ticks
+#
+Caixas:
+  Basica:
+    Id: 'Basica'
+    Holograma:
+      - '&fCaixa &e&lBASICA &6[I]'
+      - '&7Clique com uma chave'
+      - '&7para abri-la!'
+      - ''
+    Representacao: { Id: 16 }
+    Chave-iten:
+      Id: 131
+      Nome: '&eKey Básica'
+      Lore:
+        - '&7Use para abrir'
+        - '&7caixas &fbásicas&7!'
+        - ''
+        - '&eClique numa caixa'
+        - '&eem /caixas'
+    Animacoes:
+      Drop:
+        Tipo: drop
+        Itens:
+          Iten-1: { Id: 263 }
+          Iten-2: { Id: 257 }
+          Iten-3: { Id: 131 }
+        Vida-iten: 15 # ticks
+        Delay: 10 # ticks
+        Repeticoes: 12 # repetições por cada pausa
+        Pausa: 70 # ticks
+      Efeito:
+        Tipo: efeito
+        Posicao: { X: 0, Y: -1, Z: 0 }
+        Id: HAPPY_VILLAGER
+        Repeticao: 3 # segundos
+
+  Avancada:
+    Id: 'avancada'
+    Holograma:
+      - '&fCaixa &a&lAVANÇADA &6[II]'
+      - '&7Clique com uma chave'
+      - '&7para abri-la!'
+      - ''
+    Representacao: { Id: 14 }
+    Chave-iten:
+      Id: 131
+      Nome: '&aKey Avançada'
+      Lore:
+        - '&7Use para abrir'
+        - '&7caixas &favançadas&7!'
+        - ''
+        - '&aClique numa caixa'
+        - '&aem /caixas'
+    Animacoes: {}
+
+  Suprema:
+    Id: 'suprema'
+    Holograma:
+      - '&fCaixa &4&lSUPREMA &6[III]'
+      - '&7Clique com uma chave'
+      - '&7para abri-la!'
+      - ''
+    bloco: { Id: 129 }
+    Chave-iten:
+      Id: 131
+      Nome: '&4Key Suprema'
+      Lore:
+        - '&7Use para abrir'
+        - '&7caixas &fsupremas&7!'
+        - ''
+        - '&eClique numa caixa'
+        - '&eem /caixas'
+    Animacoes: {}
+
+  Lendaria:
+    Id: 'lendaria'
+    Holograma:
+      - '&fCaixa &6&lLENDARIA &6[IV]'
+      - '&7Clique com uma chave'
+      - '&7para abri-la!'
+      - ''
+    Representacao: { Id: 133 }
+    Chave-iten:
+      Id: 131
+      Nome: '&6Key Lendaria'
+      Lore:
+        - '&7Use para abrir'
+        - '&7caixas &flendarias&7!'
+        - ''
+        - '&eClique numa caixa'
+        - '&eem /caixas'
+    Animacoes: {}
