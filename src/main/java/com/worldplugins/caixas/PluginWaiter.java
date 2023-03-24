@@ -1,5 +1,7 @@
 package com.worldplugins.caixas;
 
+import com.worldplugins.caixas.command.GiveLocator;
+import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
 import com.worldplugins.lib.config.cache.impl.MessagesConfig;
 import com.worldplugins.lib.config.cache.impl.SoundsConfig;
@@ -33,7 +35,7 @@ public class PluginWaiter {
         this.plugin = plugin;
         scheduler = new SchedulerBuilder(plugin);
         configManager = new YamlConfigManager(plugin);
-        configCacheManager = new ConfigCacheInitializer(configManager).init();
+        configCacheManager = new ConfigCacheInitializer(plugin, configManager).init();
         menuContainerManager = new MenuContainerManagerImpl();
         viewManager = new ViewManagerImpl();
     }
@@ -69,8 +71,11 @@ public class PluginWaiter {
 
     private void registerCommands() {
         final CommandRegistry registry = new CommandRegistry(plugin);
+        final MainConfig mainConfig = configCacheManager.get(MainConfig.class);
 
-        registry.command();
+        registry.command(
+            new GiveLocator(mainConfig)
+        );
         registry.registerAll();
     }
 

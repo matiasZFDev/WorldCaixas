@@ -80,3 +80,5 @@
 # * As mensagens são recarregadas por completo no reload.
 # * Pode mudar os tipos a vontade.
 # * O valor da placeholder não é afetado pelo tipo de mensagem. Pode utilizar qual você quiser.
+Localizador-caixa-inexistente: "&cCaixa &n@tipo&c não identificada. Tipos registrados: @lista"
+Localizador-entrego: '&aLocalizador da caixa &n@tipo&a foi entrego.'

@@ -21,7 +21,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @ExtensionMethod({
     ConfigurationExtensions.class
@@ -41,8 +44,21 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
             private final @NonNull AnimationFactory animationFactory;
         }
 
+        @RequiredArgsConstructor
+        public static class Crates {
+            private final @NonNull List<Crate> crates;
+
+            public @NonNull Optional<Crate> getById(@NonNull String id) {
+                return crates.stream().filter(it -> it.getId().equals(id)).findFirst();
+            }
+
+            public @NonNull Collection<Crate> getAll() {
+                return new ArrayList<>(crates);
+            }
+        }
+
         private final @NonNull ItemStack locatorItem;
-        private final @NonNull List<Crate> crates;
+        private final @NonNull Crates crates;
     }
 
     private final @NonNull Plugin plugin;
@@ -56,7 +72,7 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
     public @NonNull Config fetch(@NonNull FileConfiguration config) {
         return new Config(
             config.getItem("Localizador-iten"),
-            fetchCrates(config.getConfigurationSection("Caixas"))
+            new Config.Crates(fetchCrates(config.getConfigurationSection("Caixas")))
         );
     }
 

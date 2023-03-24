@@ -20,6 +20,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.20")
     annotationProcessor("org.projectlombok:lombok:1.18.20")
     compileOnly(files("/home/post/dev/bukkit-libs/spigot.jar"))
+    compileOnly(files("/home/post/dev/bukkit-libs/GrandeCaixas.jar"))
     compileOnly(files("/home/post/dev/bukkit-libs/worldplugins/WorldLib/WorldLib-LATEST.jar"))
 }
 
