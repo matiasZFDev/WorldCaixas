@@ -3,6 +3,7 @@ package com.worldplugins.caixas;
 import com.worldplugins.caixas.command.GiveKey;
 import com.worldplugins.caixas.command.GiveKeyAll;
 import com.worldplugins.caixas.command.GiveLocator;
+import com.worldplugins.caixas.command.Reload;
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
 import com.worldplugins.lib.config.cache.impl.MessagesConfig;
@@ -79,7 +80,8 @@ public class PluginWaiter {
         registry.command(
             new GiveLocator(mainConfig),
             new GiveKey(keyFactory, mainConfig),
-            new GiveKeyAll(keyFactory, mainConfig)
+            new GiveKeyAll(keyFactory, mainConfig),
+            new Reload(configManager, configCacheManager, menuContainerManager)
         );
         registry.registerAll();
     }
