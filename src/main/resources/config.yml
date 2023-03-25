@@ -69,7 +69,7 @@ Caixas:
         - '&eem /caixas'
     Animacoes:
       Drop:
-        Tipo: drop
+        Tipo: DROP
         Itens:
           Iten-1: { Id: 263 }
           Iten-2: { Id: 257 }
@@ -79,7 +79,7 @@ Caixas:
         Repeticoes: 12 # repetições por cada pausa
         Pausa: 70 # ticks
       Efeito:
-        Tipo: efeito
+        Tipo: EFEITO
         Posicao: { X: 0, Y: -1, Z: 0 }
         Id: HAPPY_VILLAGER
         Repeticao: 3 # segundos
@@ -110,7 +110,7 @@ Caixas:
       - '&7Clique com uma chave'
       - '&7para abri-la!'
       - ''
-    bloco: { Id: 129 }
+    Representacao: { Id: 129 }
     Chave-iten:
       Id: 131
       Nome: '&4Key Suprema'

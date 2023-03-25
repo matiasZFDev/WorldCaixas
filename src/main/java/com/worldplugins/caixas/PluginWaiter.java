@@ -1,10 +1,14 @@
 package com.worldplugins.caixas;
 
-import com.worldplugins.caixas.command.GiveKey;
-import com.worldplugins.caixas.command.GiveKeyAll;
-import com.worldplugins.caixas.command.GiveLocator;
-import com.worldplugins.caixas.command.Reload;
+import com.worldplugins.caixas.command.*;
 import com.worldplugins.caixas.config.MainConfig;
+import com.worldplugins.caixas.config.RewardsDataConfig;
+import com.worldplugins.caixas.rewards.ChanceReward;
+import com.worldplugins.caixas.util.ConversationProvider;
+import com.worldplugins.caixas.view.CrateRewardEditView;
+import com.worldplugins.caixas.view.CrateRewardsPageView;
+import com.worldplugins.lib.api.storage.item.configuration.shelving.ShelvingConfigurationItemStorage;
+import com.worldplugins.lib.common.Factory;
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
 import com.worldplugins.lib.config.cache.impl.MessagesConfig;
 import com.worldplugins.lib.config.cache.impl.SoundsConfig;
@@ -21,6 +25,7 @@ import com.worldplugins.lib.manager.view.ViewManagerImpl;
 import com.worldplugins.lib.util.SchedulerBuilder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -50,6 +55,7 @@ public class PluginWaiter {
         setGlobalResponseAccess();
         registerListeners();
         registerCommands();
+        registerViews();
         scheduleTasks();
         return () -> {};
     }
@@ -78,17 +84,28 @@ public class PluginWaiter {
         final KeyFactory keyFactory = new KeyFactory(mainConfig);
 
         registry.command(
+            new Reload(configManager, configCacheManager, menuContainerManager),
             new GiveLocator(mainConfig),
             new GiveKey(keyFactory, mainConfig),
             new GiveKeyAll(keyFactory, mainConfig),
-            new Reload(configManager, configCacheManager, menuContainerManager)
+            new Rewards(mainConfig)
         );
         registry.registerAll();
     }
 
     private void registerViews() {
         final ViewRegistry registry = new ViewRegistry(viewManager, menuContainerManager, configManager);
-        registry.register();
+        final RewardsDataConfig rewardsDataConfig = configCacheManager.get(RewardsDataConfig.class);
+        final Factory<ConversationFactory> conversationProvider = new ConversationProvider(plugin);
+
+        final ShelvingConfigurationItemStorage<ChanceReward> itemStorage = new ShelvingConfigurationItemStorage<>(
+            36, rewardsDataConfig, ChanceReward[]::new
+        );
+
+        registry.register(
+            new CrateRewardsPageView(itemStorage),
+            new CrateRewardEditView(itemStorage, conversationProvider)
+        );
     }
 
     private void scheduleTasks() {

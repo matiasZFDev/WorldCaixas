@@ -78,11 +78,11 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
 
     private @NonNull List<Config.Crate> fetchCrates(@NonNull ConfigurationSection section) {
         return section.map(it -> new Config.Crate(
-            section.getString("Id"),
-            section.getStringList("Holograma"),
-            fetchCrateRepresentation(section.getConfigurationSection("Representacao")),
-            section.getItem("Chave-iten"),
-            fetchAnimations(section.getConfigurationSection("Animacoes"))
+            it.getString("Id"),
+            it.getStringList("Holograma"),
+            fetchCrateRepresentation(it.getConfigurationSection("Representacao")),
+            it.getItem("Chave-iten"),
+            fetchAnimations(it.getConfigurationSection("Animacoes"))
         ));
     }
 

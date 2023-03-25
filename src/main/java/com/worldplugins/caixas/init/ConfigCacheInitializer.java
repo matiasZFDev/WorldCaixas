@@ -1,6 +1,7 @@
 package com.worldplugins.caixas.init;
 
 import com.worldplugins.caixas.config.MainConfig;
+import com.worldplugins.caixas.config.RewardsDataConfig;
 import com.worldplugins.lib.WorldLib;
 import com.worldplugins.lib.common.ConfigCache;
 import com.worldplugins.lib.common.Initializer;
@@ -29,7 +30,8 @@ public class ConfigCacheInitializer implements Initializer<ConfigCacheManager> {
         registry.register(
             MessagesConfig.class,
             SoundsConfig.class,
-            EffectsConfig.class
+            EffectsConfig.class,
+            RewardsDataConfig.class
         );
         registry.register(mainConfig());
         cacheManager.update();
