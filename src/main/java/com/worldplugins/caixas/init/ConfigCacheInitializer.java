@@ -2,11 +2,7 @@ package com.worldplugins.caixas.init;
 
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.config.RewardsDataConfig;
-import com.worldplugins.lib.WorldLib;
-import com.worldplugins.lib.common.ConfigCache;
 import com.worldplugins.lib.common.Initializer;
-import com.worldplugins.lib.common.Logger;
-import com.worldplugins.lib.config.bukkit.ConfigContainer;
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
 import com.worldplugins.lib.config.cache.impl.MessagesConfig;
 import com.worldplugins.lib.config.cache.impl.SoundsConfig;
@@ -31,20 +27,10 @@ public class ConfigCacheInitializer implements Initializer<ConfigCacheManager> {
             MessagesConfig.class,
             SoundsConfig.class,
             EffectsConfig.class,
+            MainConfig.class,
             RewardsDataConfig.class
         );
-        registry.register(mainConfig());
         cacheManager.update();
         return cacheManager;
-    }
-
-    private @NonNull ConfigCache<?> mainConfig() {
-        final String config = "config";
-        configManager.load(config);
-        final ConfigContainer configContainer = configManager.getContainer(config);
-        final Logger logger = WorldLib.DEFAULT_LOGGERS.CONFIG_ERROR.apply(new WorldLib.DEFAULT_LOGGERS.PluginLogData(
-            plugin.getName(), configContainer.path()
-        ));
-        return new MainConfig(logger, configContainer, plugin);
     }
 }

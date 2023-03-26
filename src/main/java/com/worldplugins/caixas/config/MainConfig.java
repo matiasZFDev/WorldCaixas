@@ -10,6 +10,7 @@ import com.worldplugins.caixas.config.data.representation.SkullBlock;
 import com.worldplugins.lib.common.Logger;
 import com.worldplugins.lib.config.bukkit.ConfigContainer;
 import com.worldplugins.lib.config.cache.StateConfig;
+import com.worldplugins.lib.config.cache.annotation.Config;
 import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,7 +20,6 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,6 +30,7 @@ import java.util.Optional;
     ConfigurationExtensions.class
 })
 
+@Config(path = "config")
 public class MainConfig extends StateConfig<MainConfig.Config> {
     @RequiredArgsConstructor
     @Getter
@@ -61,11 +62,8 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
         private final @NonNull Crates crates;
     }
 
-    private final @NonNull Plugin plugin;
-
-    public MainConfig(Logger logger, @NonNull ConfigContainer configContainer, @NonNull Plugin plugin) {
+    public MainConfig(Logger logger, @NonNull ConfigContainer configContainer) {
         super(logger, configContainer);
-        this.plugin = plugin;
     }
 
     @Override
@@ -103,9 +101,9 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
 
             switch (type) {
                 case "DROP":
-                    return new DropAnimationFactory(plugin, section);
+                    return new DropAnimationFactory(section);
                 case "EFEITO":
-                    return new EffectAnimationFactory(plugin, section);
+                    return new EffectAnimationFactory(section);
                 default:
                     throw new Error("Não existe nenhuma animação do tipo '" + type + "'.");
             }
