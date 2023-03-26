@@ -3,6 +3,7 @@ package com.worldplugins.caixas.config.data.animation;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,9 +14,9 @@ public class AnimationCompoundFactory implements AnimationFactory {
     private final @NonNull Collection<AnimationFactory> factories;
 
     @Override
-    public @NonNull Animation create(@NonNull Location origin) {
+    public @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin) {
         final List<Animation> animations = factories.stream()
-            .map(factory -> factory.create(origin))
+            .map(factory -> factory.create(plugin, origin))
             .collect(Collectors.toList());
 
         return new Animation() {

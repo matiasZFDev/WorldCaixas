@@ -1,6 +1,6 @@
 package com.worldplugins.caixas.command;
 
-import com.worldplugins.caixas.KeyFactory;
+import com.worldplugins.caixas.factory.KeyFactory;
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.extension.ResponseExtensions;
 import com.worldplugins.lib.command.CommandModule;

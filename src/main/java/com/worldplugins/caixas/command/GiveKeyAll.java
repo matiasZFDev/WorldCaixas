@@ -1,6 +1,6 @@
 package com.worldplugins.caixas.command;
 
-import com.worldplugins.caixas.KeyFactory;
+import com.worldplugins.caixas.factory.KeyFactory;
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.extension.ResponseExtensions;
 import com.worldplugins.lib.command.CommandModule;
@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Optional;

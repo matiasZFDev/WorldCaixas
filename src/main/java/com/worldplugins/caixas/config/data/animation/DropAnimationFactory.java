@@ -2,7 +2,9 @@ package com.worldplugins.caixas.config.data.animation;
 
 import java.util.*;
 
+import com.worldplugins.caixas.NBTKeys;
 import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
+import com.worldplugins.lib.extension.bukkit.NBTExtensions;
 import com.worldplugins.lib.util.ItemUtils;
 import lombok.*;
 import lombok.experimental.ExtensionMethod;
@@ -15,20 +17,22 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 @ExtensionMethod({
-    ConfigurationExtensions.class
+    ConfigurationExtensions.class,
+    NBTExtensions.class
 })
 
 @RequiredArgsConstructor
 public class DropAnimationFactory implements AnimationFactory {
-    private final @NonNull Plugin plugin;
     private final @NonNull ConfigurationSection section;
 
-    public @NonNull Animation create(@NonNull Location origin) {
+    public @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin) {
         final Location location = origin.clone().add(new Vector(0.5, 1.0, 0.5));
         return new DropAnimation(
             plugin,
             location,
-            section.getConfigurationSection("Itens").map(ItemUtils::buildFromSectionNoMeta),
+            section
+                .getConfigurationSection("Itens")
+                .map(current -> ItemUtils.buildFromSectionNoMeta(current).addReference(NBTKeys.FAKE_DROP, "")),
             section.getLong("Vida-iten"),
             section.getLong("Delay"),
             (short) section.getInt("Repeticoes"),
@@ -74,7 +78,7 @@ public class DropAnimationFactory implements AnimationFactory {
 
 
         private @NonNull ItemStack rollItem() {
-            return this.items.get((int) Math.round((Math.random() * this.items.size())));
+            return this.items.get((int) Math.floor((Math.random() * this.items.size())));
         }
 
         public void run() {

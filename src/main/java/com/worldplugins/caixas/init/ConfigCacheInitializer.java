@@ -1,5 +1,6 @@
 package com.worldplugins.caixas.init;
 
+import com.worldplugins.caixas.config.LocationsDataConfig;
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.config.RewardsDataConfig;
 import com.worldplugins.lib.common.Initializer;
@@ -28,7 +29,8 @@ public class ConfigCacheInitializer implements Initializer<ConfigCacheManager> {
             SoundsConfig.class,
             EffectsConfig.class,
             MainConfig.class,
-            RewardsDataConfig.class
+            RewardsDataConfig.class,
+            LocationsDataConfig.class
         );
         cacheManager.update();
         return cacheManager;

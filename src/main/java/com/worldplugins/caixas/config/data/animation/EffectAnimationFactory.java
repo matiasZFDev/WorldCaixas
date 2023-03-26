@@ -11,11 +11,10 @@ import org.bukkit.util.Vector;
 
 @RequiredArgsConstructor
 public final class EffectAnimationFactory implements AnimationFactory {
-    private final @NonNull Plugin plugin;
     private final @NonNull ConfigurationSection section;
 
     @Override
-    public @NonNull Animation create(@NonNull Location origin) {
+    public @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin) {
         final ConfigurationSection positionSection = section.getConfigurationSection("Posicao");
         final Vector position = new Vector(
             positionSection.getDouble("X"),
@@ -33,21 +32,15 @@ public final class EffectAnimationFactory implements AnimationFactory {
         private final @NonNull Plugin plugin;
         private final @NonNull Location location;
         private final @NonNull Effect effect;
-        private final short repetition;
+        private final long repetition;
         private int taskId = -1;
-        private short nextEffect;
 
         public void run() {
-            taskId = Bukkit.getScheduler().runTaskTimer(this.plugin, this::animation, 20L, 20L).getTaskId();
+            taskId = Bukkit.getScheduler().runTaskTimer(this.plugin, this::animation, 0L, repetition).getTaskId();
         }
 
         private void animation() {
-            if (this.nextEffect > 0) {
-                this.nextEffect -= 1;
-            } else {
-                this.location.getWorld().playEffect(this.location, this.effect, 0);
-                this.nextEffect = this.repetition;
-            }
+            this.location.getWorld().playEffect(this.location, this.effect, 0);
         }
 
         public void stop() {

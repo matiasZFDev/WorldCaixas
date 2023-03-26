@@ -82,9 +82,14 @@
 # * O valor da placeholder não é afetado pelo tipo de mensagem. Pode utilizar qual você quiser.
 Jogador-offline: '&cO jogador @jogador se encontra offline.'
 Quantia-invalida: '&cInsira uma quantia válida.'
+Reload-sucesso: '&aConfigurações recarregadas com sucesso.'
 Caixa-inexistente: "&cCaixa &n@tipo&c não identificada. Tipos registrados: @lista."
 Localizador-entrego: '&fLocalizador da caixa &7@tipo&f foi entrego.'
 Chaves-enviadas: '&fVocê enviou &a@quantiax &fchaves &7@tipo &fpro jogador &a@jogador!'
 Chaves-recebidas: '&fVocê recêbeu &a@quantiax &fchaves &7@tipo&f!'
 Chaves-enviadas-todos: '&fVocê enviou &a@quantiax &fchaves &7@tipo &fpara todos os jogadores &aonline&f!'
-Reload-sucesso: '&aConfigurações recarregadas com sucesso.'
+Caixa-localizada: '&eCaixa localizada com sucesso.'
+Retirar-caixa-permissoes: '&cVocê não tem as permissões para retirar caixas.'
+Retirar-caixa-shift:
+  Actionbar: '&cSegure SHIFT para quebrar.'
+Caixa-retirada: '&eCaixa retirada.'

@@ -3,7 +3,7 @@ main: com.worldplugins.caixas.WorldCaixas
 version: 1.0
 authors: [PostDev]
 api-version: 1.8
-depend: [WorldLib]
+depend: [WorldLib, HolographicDisplays]
 commands:
   caixas:
     description: Staff command

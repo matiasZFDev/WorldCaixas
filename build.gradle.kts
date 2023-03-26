@@ -10,6 +10,7 @@ version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    maven(url = "https://repo.codemc.io/repository/maven-public/")
 }
 
 val projectFullName = "${project.name}-${project.version}.jar";
@@ -22,6 +23,7 @@ dependencies {
     compileOnly(files("/home/post/dev/bukkit-libs/spigot.jar"))
     compileOnly(files("/home/post/dev/bukkit-libs/GrandeCaixas.jar"))
     compileOnly(files("/home/post/dev/bukkit-libs/worldplugins/WorldLib/WorldLib-LATEST.jar"))
+    compileOnly("me.filoghost.holographicdisplays:holographicdisplays-api:3.0.0")
 }
 
 tasks.getByName<Test>("test") {

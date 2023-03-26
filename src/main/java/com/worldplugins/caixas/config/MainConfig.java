@@ -4,13 +4,12 @@ import com.worldplugins.caixas.config.data.animation.AnimationFactory;
 import com.worldplugins.caixas.config.data.animation.DropAnimationFactory;
 import com.worldplugins.caixas.config.data.animation.EffectAnimationFactory;
 import com.worldplugins.caixas.config.data.animation.AnimationCompoundFactory;
-import com.worldplugins.caixas.config.data.representation.CrateRepresentation;
-import com.worldplugins.caixas.config.data.representation.NormalBlock;
-import com.worldplugins.caixas.config.data.representation.SkullBlock;
+import com.worldplugins.caixas.config.data.representation.*;
 import com.worldplugins.lib.common.Logger;
 import com.worldplugins.lib.config.bukkit.ConfigContainer;
 import com.worldplugins.lib.config.cache.StateConfig;
 import com.worldplugins.lib.config.cache.annotation.Config;
+import com.worldplugins.lib.extension.bukkit.ColorExtensions;
 import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
 import lombok.Getter;
 import lombok.NonNull;
@@ -27,7 +26,8 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtensionMethod({
-    ConfigurationExtensions.class
+    ConfigurationExtensions.class,
+    ColorExtensions.class
 })
 
 @Config(path = "config")
@@ -39,7 +39,6 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
         @Getter
         public static class Crate {
             private final @NonNull String id;
-            private final @NonNull List<String> hologramLines;
             private final @NonNull CrateRepresentation representation;
             private final @NonNull ItemStack keyItem;
             private final @NonNull AnimationFactory animationFactory;
@@ -75,17 +74,23 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
     }
 
     private @NonNull List<Config.Crate> fetchCrates(@NonNull ConfigurationSection section) {
-        return section.map(it -> new Config.Crate(
-            it.getString("Id"),
-            it.getStringList("Holograma"),
-            fetchCrateRepresentation(it.getConfigurationSection("Representacao")),
-            it.getItem("Chave-iten"),
-            fetchAnimations(it.getConfigurationSection("Animacoes"))
-        ));
+
+        return section.map(it -> {
+            final @NonNull MeasuredCrateRepresentation baseRepresentation = fetchCrateRepresentation(
+                it.getConfigurationSection("Representacao")
+            );
+            final List<String> hologramLines = it.getStringList("Holograma").color();
+            return new Config.Crate(
+                it.getString("Id"),
+                new HologrammedRepresentation(hologramLines, baseRepresentation),
+                it.getItem("Chave-iten"),
+                fetchAnimations(it.getConfigurationSection("Animacoes"))
+            );
+        });
     }
 
     @SuppressWarnings("deprecation")
-    private @NonNull CrateRepresentation fetchCrateRepresentation(@NonNull ConfigurationSection section) {
+    private @NonNull MeasuredCrateRepresentation fetchCrateRepresentation(@NonNull ConfigurationSection section) {
         if (section.contains("Id"))
             return new NormalBlock(Material.getMaterial(section.getInt("Id")), (byte) section.getInt("Data"));
 
@@ -101,9 +106,9 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
 
             switch (type) {
                 case "DROP":
-                    return new DropAnimationFactory(section);
+                    return new DropAnimationFactory(current);
                 case "EFEITO":
-                    return new EffectAnimationFactory(section);
+                    return new EffectAnimationFactory(current);
                 default:
                     throw new Error("Não existe nenhuma animação do tipo '" + type + "'.");
             }

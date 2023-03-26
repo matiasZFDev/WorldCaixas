@@ -1,4 +1,4 @@
-package com.worldplugins.caixas;
+package com.worldplugins.caixas.factory;
 
 import com.worldplugins.caixas.config.MainConfig;
 import lombok.NonNull;

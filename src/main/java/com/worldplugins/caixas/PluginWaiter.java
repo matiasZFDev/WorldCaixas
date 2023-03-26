@@ -1,8 +1,14 @@
 package com.worldplugins.caixas;
 
 import com.worldplugins.caixas.command.*;
+import com.worldplugins.caixas.config.LocationsDataConfig;
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.config.RewardsDataConfig;
+import com.worldplugins.caixas.factory.KeyFactory;
+import com.worldplugins.caixas.listener.CrateAnimationListener;
+import com.worldplugins.caixas.listener.CrateLocateListener;
+import com.worldplugins.caixas.listener.CrateUnlocateListener;
+import com.worldplugins.caixas.manager.CrateManager;
 import com.worldplugins.caixas.rewards.ChanceReward;
 import com.worldplugins.caixas.util.ConversationProvider;
 import com.worldplugins.caixas.view.CrateRewardEditView;
@@ -38,6 +44,7 @@ public class PluginWaiter {
     private final @NonNull ConfigCacheManager configCacheManager;
     private final @NonNull MenuContainerManager menuContainerManager;
     private final @NonNull ViewManager viewManager;
+    private final @NonNull CrateManager crateManager;
 
     public PluginWaiter(@NonNull JavaPlugin plugin) {
         this.plugin = plugin;
@@ -46,25 +53,33 @@ public class PluginWaiter {
         configCacheManager = new ConfigCacheInitializer(plugin, configManager).init();
         menuContainerManager = new MenuContainerManagerImpl();
         viewManager = new ViewManagerImpl();
+        crateManager = new CrateManager(
+            plugin, configCacheManager.get(MainConfig.class), configCacheManager.get(LocationsDataConfig.class)
+        );
     }
 
     /**
      * @return A runnable executed when disabling
      * */
     public @NonNull Runnable execute() {
-        setGlobalResponseAccess();
+        prepareGlobalAccess();
+        loadPendings();
         registerListeners();
         registerCommands();
         registerViews();
         scheduleTasks();
-        return () -> {};
+        return crateManager::disableAll;
     }
 
-    private void setGlobalResponseAccess() {
+    private void prepareGlobalAccess() {
         GlobalAccess.setMessages(configCacheManager.get(MessagesConfig.class));
         GlobalAccess.setSounds(configCacheManager.get(SoundsConfig.class));
         GlobalAccess.setEffects(configCacheManager.get(EffectsConfig.class));
         GlobalAccess.setViewManager(viewManager);
+    }
+
+    private void loadPendings() {
+        crateManager.update();
     }
 
     private void regListeners(@NonNull Listener... listeners) {
@@ -75,7 +90,11 @@ public class PluginWaiter {
     }
 
     private void registerListeners() {
-
+        regListeners(
+            new CrateLocateListener(configCacheManager.get(MainConfig.class), crateManager),
+            new CrateUnlocateListener(crateManager),
+            new CrateAnimationListener()
+        );
     }
 
     private void registerCommands() {
@@ -84,7 +103,7 @@ public class PluginWaiter {
         final KeyFactory keyFactory = new KeyFactory(mainConfig);
 
         registry.command(
-            new Reload(configManager, configCacheManager, menuContainerManager),
+            new Reload(configManager, configCacheManager, menuContainerManager, crateManager),
             new GiveLocator(mainConfig),
             new GiveKey(keyFactory, mainConfig),
             new GiveKeyAll(keyFactory, mainConfig),
