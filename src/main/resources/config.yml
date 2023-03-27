@@ -75,15 +75,26 @@ Caixas:
           Iten-1: { Id: 263 }
           Iten-2: { Id: 257 }
           Iten-3: { Id: 131 }
-        Vida-iten: 15 # ticks
-        Delay: 10 # ticks
-        Repeticoes: 12 # repetições por cada pausa
-        Pausa: 70 # ticks
+        Vida-iten: 15
+        Delay: 10
+        Repeticoes: 12
+        Pausa: 70
       Efeito:
         Tipo: EFEITO
         Posicao: { X: 0, Y: -1, Z: 0 }
         Id: HAPPY_VILLAGER
-        Repeticao: 60 # ticks
+        Repeticao: 60
+      Mutacao-blocos:
+        Tipo: MUTACAO_BLOCO
+        Duracao: 100
+        Delay: 5
+        Pausa: 60
+        Blocos:
+          Bloco-1: { Id: 173 }
+          Bloco-2: { Id: 14 }
+          Bloco-3: { Id: 41 }
+          Bloco-4: { Id: 15 }
+          Bloco-5: { Id: 95, Data: 15 }
 
   Avancada:
     Id: 'avancada'

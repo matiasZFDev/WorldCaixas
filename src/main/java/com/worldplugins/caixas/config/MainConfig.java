@@ -1,9 +1,8 @@
 package com.worldplugins.caixas.config;
 
 import com.worldplugins.caixas.NBTKeys;
+import com.worldplugins.caixas.config.data.AnimationType;
 import com.worldplugins.caixas.config.data.animation.AnimationFactory;
-import com.worldplugins.caixas.config.data.animation.DropAnimationFactory;
-import com.worldplugins.caixas.config.data.animation.EffectAnimationFactory;
 import com.worldplugins.caixas.config.data.animation.AnimationCompoundFactory;
 import com.worldplugins.caixas.config.data.representation.*;
 import com.worldplugins.lib.common.Logger;
@@ -113,15 +112,9 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
     private @NonNull AnimationFactory fetchAnimations(@NonNull ConfigurationSection section) {
         return new AnimationCompoundFactory(section.map(current -> {
             final String type = current.getString("Tipo");
-
-            switch (type) {
-                case "DROP":
-                    return new DropAnimationFactory(current);
-                case "EFEITO":
-                    return new EffectAnimationFactory(current);
-                default:
-                    throw new Error("Não existe nenhuma animação do tipo '" + type + "'.");
-            }
+            return AnimationType
+                .find(type).orElseThrow(() -> new Error("Não existe nenhuma animação do tipo '" + type + "'."))
+                .getFactory(current);
         }));
     }
 }
