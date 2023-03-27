@@ -58,6 +58,7 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
         }
 
         private final @NonNull ItemStack locatorItem;
+        private final @NonNull List<Integer> rewardsSlots;
         private final @NonNull Crates crates;
     }
 
@@ -69,6 +70,7 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
     public @NonNull Config fetch(@NonNull FileConfiguration config) {
         return new Config(
             config.getItem("Localizador-iten"),
+            config.getIntegerList("Recompensas-slots"),
             new Config.Crates(fetchCrates(config.getConfigurationSection("Caixas")))
         );
     }

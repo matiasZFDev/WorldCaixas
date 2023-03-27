@@ -1,0 +1,25 @@
+Nome: 'Caixa @caixa (@atual/@totais)'
+Linhas: 6
+Data:
+  Recompensa-iten:
+    Id: 1 # Dinamico
+    Nome: '@nome'
+    Lore:
+      - '&8&oRecompensa #@posicao'
+      - ''
+      - '@@lore'
+      - ''
+      - '&8⚄ &6Chance: &f@chance%'
+Conteudo:
+  Pagina-anterior:
+    Slot: 48
+    Id: 351
+    Data: 12
+    Nome: '&eAnterior'
+    Lore: ''
+  Pagina-seguinte:
+    Slot: 50
+    Id: 351
+    Data: 12
+    Nome: '&eSeguinte'
+    Lore: ''

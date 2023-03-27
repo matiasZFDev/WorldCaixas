@@ -4,15 +4,18 @@ import com.worldplugins.caixas.command.*;
 import com.worldplugins.caixas.config.LocationsDataConfig;
 import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.config.RewardsDataConfig;
+import com.worldplugins.caixas.controller.RewardsController;
 import com.worldplugins.caixas.factory.KeyFactory;
 import com.worldplugins.caixas.listener.CrateAnimationListener;
 import com.worldplugins.caixas.listener.CrateLocateListener;
+import com.worldplugins.caixas.listener.CrateRewardsOverviewListener;
 import com.worldplugins.caixas.listener.CrateUnlocateListener;
 import com.worldplugins.caixas.manager.CrateManager;
 import com.worldplugins.caixas.rewards.ChanceReward;
 import com.worldplugins.caixas.util.ConversationProvider;
 import com.worldplugins.caixas.view.CrateRewardEditView;
 import com.worldplugins.caixas.view.CrateRewardsPageView;
+import com.worldplugins.caixas.view.CrateRewardsView;
 import com.worldplugins.lib.api.storage.item.configuration.shelving.ShelvingConfigurationItemStorage;
 import com.worldplugins.lib.common.Factory;
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
@@ -28,7 +31,6 @@ import com.worldplugins.lib.manager.view.MenuContainerManager;
 import com.worldplugins.lib.manager.view.MenuContainerManagerImpl;
 import com.worldplugins.lib.manager.view.ViewManager;
 import com.worldplugins.lib.manager.view.ViewManagerImpl;
-import com.worldplugins.lib.util.SchedulerBuilder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.conversations.ConversationFactory;
@@ -39,16 +41,16 @@ import org.bukkit.plugin.java.JavaPlugin;
 @RequiredArgsConstructor
 public class PluginWaiter {
     private final @NonNull JavaPlugin plugin;
-    private final @NonNull SchedulerBuilder scheduler;
     private final @NonNull ConfigManager configManager;
     private final @NonNull ConfigCacheManager configCacheManager;
     private final @NonNull MenuContainerManager menuContainerManager;
     private final @NonNull ViewManager viewManager;
     private final @NonNull CrateManager crateManager;
+    private final ShelvingConfigurationItemStorage<ChanceReward> itemStorage;
+    private final @NonNull RewardsController rewardsController;
 
     public PluginWaiter(@NonNull JavaPlugin plugin) {
         this.plugin = plugin;
-        scheduler = new SchedulerBuilder(plugin);
         configManager = new YamlConfigManager(plugin);
         configCacheManager = new ConfigCacheInitializer(plugin, configManager).init();
         menuContainerManager = new MenuContainerManagerImpl();
@@ -56,6 +58,10 @@ public class PluginWaiter {
         crateManager = new CrateManager(
             plugin, configCacheManager.get(MainConfig.class), configCacheManager.get(LocationsDataConfig.class)
         );
+        itemStorage = new ShelvingConfigurationItemStorage<>(
+            36, configCacheManager.get(RewardsDataConfig.class), ChanceReward[]::new
+        );
+        rewardsController = new RewardsController(configCacheManager.get(MainConfig.class), itemStorage);
     }
 
     /**
@@ -67,7 +73,6 @@ public class PluginWaiter {
         registerListeners();
         registerCommands();
         registerViews();
-        scheduleTasks();
         return crateManager::disableAll;
     }
 
@@ -93,7 +98,8 @@ public class PluginWaiter {
         regListeners(
             new CrateLocateListener(configCacheManager.get(MainConfig.class), crateManager),
             new CrateUnlocateListener(crateManager),
-            new CrateAnimationListener()
+            new CrateAnimationListener(),
+            new CrateRewardsOverviewListener(crateManager, rewardsController)
         );
     }
 
@@ -114,20 +120,12 @@ public class PluginWaiter {
 
     private void registerViews() {
         final ViewRegistry registry = new ViewRegistry(viewManager, menuContainerManager, configManager);
-        final RewardsDataConfig rewardsDataConfig = configCacheManager.get(RewardsDataConfig.class);
         final Factory<ConversationFactory> conversationProvider = new ConversationProvider(plugin);
-
-        final ShelvingConfigurationItemStorage<ChanceReward> itemStorage = new ShelvingConfigurationItemStorage<>(
-            36, rewardsDataConfig, ChanceReward[]::new
-        );
 
         registry.register(
             new CrateRewardsPageView(itemStorage),
-            new CrateRewardEditView(itemStorage, conversationProvider)
+            new CrateRewardEditView(itemStorage, conversationProvider),
+            new CrateRewardsView(rewardsController)
         );
-    }
-
-    private void scheduleTasks() {
-
     }
 }
