@@ -6,10 +6,7 @@ import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.config.RewardsDataConfig;
 import com.worldplugins.caixas.controller.RewardsController;
 import com.worldplugins.caixas.factory.KeyFactory;
-import com.worldplugins.caixas.listener.CrateAnimationListener;
-import com.worldplugins.caixas.listener.CrateLocateListener;
-import com.worldplugins.caixas.listener.CrateRewardsOverviewListener;
-import com.worldplugins.caixas.listener.CrateUnlocateListener;
+import com.worldplugins.caixas.listener.*;
 import com.worldplugins.caixas.manager.CrateManager;
 import com.worldplugins.caixas.rewards.ChanceReward;
 import com.worldplugins.caixas.util.ConversationProvider;
@@ -95,11 +92,13 @@ public class PluginWaiter {
     }
 
     private void registerListeners() {
+        final CrateRewardHelper rewardHelper = new CrateRewardHelper(itemStorage);
         regListeners(
             new CrateLocateListener(configCacheManager.get(MainConfig.class), crateManager),
             new CrateUnlocateListener(crateManager),
             new CrateAnimationListener(),
-            new CrateRewardsOverviewListener(crateManager, rewardsController)
+            new CrateRewardsOverviewListener(crateManager, rewardsController),
+            new CrateOpenListener(crateManager, rewardHelper)
         );
     }
 

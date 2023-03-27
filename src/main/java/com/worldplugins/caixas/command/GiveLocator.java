@@ -57,7 +57,7 @@ public class GiveLocator implements CommandModule {
 
         final ItemStack locatorItem = mainConfig.get().getLocatorItem()
             .clone()
-            .addReference(NBTKeys.LOCATOR_KEY, crateId);
+            .addReference(NBTKeys.CRATE_LOCATOR, crateId);
         player.giveItems(locatorItem);
         player.respond("Localizador-entrego", message -> message.replace(
             "@tipo".to(crateId)

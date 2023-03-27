@@ -1,5 +1,6 @@
 package com.worldplugins.caixas.config;
 
+import com.worldplugins.caixas.NBTKeys;
 import com.worldplugins.caixas.config.data.animation.AnimationFactory;
 import com.worldplugins.caixas.config.data.animation.DropAnimationFactory;
 import com.worldplugins.caixas.config.data.animation.EffectAnimationFactory;
@@ -11,6 +12,8 @@ import com.worldplugins.lib.config.cache.StateConfig;
 import com.worldplugins.lib.config.cache.annotation.Config;
 import com.worldplugins.lib.extension.bukkit.ColorExtensions;
 import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
+import com.worldplugins.lib.extension.bukkit.ItemExtensions;
+import com.worldplugins.lib.extension.bukkit.NBTExtensions;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +30,9 @@ import java.util.Optional;
 
 @ExtensionMethod({
     ConfigurationExtensions.class,
-    ColorExtensions.class
+    ColorExtensions.class,
+    ItemExtensions.class,
+    NBTExtensions.class
 })
 
 @Config(path = "config")
@@ -78,14 +83,17 @@ public class MainConfig extends StateConfig<MainConfig.Config> {
     private @NonNull List<Config.Crate> fetchCrates(@NonNull ConfigurationSection section) {
 
         return section.map(it -> {
+            final String id = it.getString("Id");
             final @NonNull MeasuredCrateRepresentation baseRepresentation = fetchCrateRepresentation(
                 it.getConfigurationSection("Representacao")
             );
             final List<String> hologramLines = it.getStringList("Holograma").color();
             return new Config.Crate(
-                it.getString("Id"),
+                id,
                 new HologrammedRepresentation(hologramLines, baseRepresentation),
-                it.getItem("Chave-iten"),
+                it.getItem("Chave-iten")
+                    .colorMeta()
+                    .addReference(NBTKeys.CRATE_KEY, id),
                 fetchAnimations(it.getConfigurationSection("Animacoes"))
             );
         });

@@ -93,3 +93,12 @@ Retirar-caixa-permissoes: '&cVocê não tem as permissões para retirar caixas.'
 Retirar-caixa-shift:
   Actionbar: '&cSegure SHIFT para quebrar.'
 Caixa-retirada: '&eCaixa retirada.'
+Caixa-aberta-nada:
+  Titulo: '&e&lCAIXAS'
+  Subtitulo: '&cVocê ganhou nada.'
+Caixa-aberta:
+  Titulo: '&e&lCAIXAS'
+  Subtitulo: '&fVocê ganhou um @recompensa &7(x@quantia)&f!'
+Caixa-aberta-sem-nome:
+  Titulo: '&e&lCAIXAS'
+  Subtitulo: '&fVocê ganhou uma recompensa &7(x@quantia)&f!'

@@ -35,13 +35,13 @@ public class CrateLocateListener implements Listener {
         if (!event.hasItem() || event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
 
-        if (!event.getItem().hasReference(NBTKeys.LOCATOR_KEY))
+        if (!event.getItem().hasReference(NBTKeys.CRATE_LOCATOR))
             return;
 
         event.setCancelled(true);
 
         final Player player = event.getPlayer();
-        final String crateId = event.getItem().getReference(NBTKeys.LOCATOR_KEY);
+        final String crateId = event.getItem().getReference(NBTKeys.CRATE_LOCATOR);
         final Optional<MainConfig.Config.Crate> crate = mainConfig.get().getCrates().getById(crateId);
 
         if (!crate.isPresent()) {
