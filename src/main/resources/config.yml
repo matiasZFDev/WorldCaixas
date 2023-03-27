@@ -1,7 +1,7 @@
 Localizador-iten:
   Skull-url: 'https://textures.minecraft.net/texture/edc36c9cb50a527aa55607a0df7185ad20aabaa903e8d9abfc78260705540def'
-  nome: '&aLocalizador de caixa'
-  lore:
+  Nome: '&aLocalizador de caixa'
+  Lore:
     - '&7Use esse iten para'
     - '&7localizar a caixa'
     - '&7correspondente.'
@@ -83,7 +83,7 @@ Caixas:
         Tipo: EFEITO
         Posicao: { X: 0, Y: -1, Z: 0 }
         Id: HAPPY_VILLAGER
-        Repeticao: 3 # segundos
+        Repeticao: 60 # ticks
 
   Avancada:
     Id: 'avancada'
