@@ -32,7 +32,7 @@ public class Rewards implements CommandModule {
         name = "caixas recompensas",
         target = CommandTarget.PLAYER,
         argsChecks = {@ArgsChecker(size = 1)},
-        usage = "&cArgumentos invalidos. Digite /caixa recompensas <tipo>",
+        usage = "&cArgumentos invalidos. Digite /caixa recompensas <caixa>",
         permission = "worldcaixas.recompensas"
     )
     @Override

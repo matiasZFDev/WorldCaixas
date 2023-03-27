@@ -33,7 +33,7 @@ public class GiveKeyAll implements CommandModule {
 
     @Command(
         name = "caixas darkeyall",
-        usage = "&cArgumentos invalidos. Digite /caixas darkeyall <tipo> <quantia>",
+        usage = "&cArgumentos invalidos. Digite /caixas darkeyall <caixa> <quantia>",
         argsChecks = {@ArgsChecker(size = 2)},
         permission = "worldcaixas.darkeyall"
     )

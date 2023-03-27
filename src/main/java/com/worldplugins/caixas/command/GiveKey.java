@@ -34,7 +34,7 @@ public class GiveKey implements CommandModule {
 
     @Command(
         name = "caixas darkey",
-        usage = "&cArgumentos invalidos. Digite /caixas darkey <jogador> <tipo> <quantia>",
+        usage = "&cArgumentos invalidos. Digite /caixas darkey <jogador> <caixa> <quantia>",
         argsChecks = {@ArgsChecker(size = 3)},
         permission = "worldcaixas.darkey"
     )

@@ -33,7 +33,7 @@ public class GiveLocator implements CommandModule {
 
     @Command(
         name = "caixas localizador",
-        usage = "&cArgumentos invalidos. Digite /caixas localizador <tipo>.",
+        usage = "&cArgumentos invalidos. Digite /caixas localizador <caixa>.",
         argsChecks = {@ArgsChecker(size = 1)},
         target = CommandTarget.PLAYER,
         permission = "worldcaixas.localizar"

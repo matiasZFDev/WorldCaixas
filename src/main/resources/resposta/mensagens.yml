@@ -80,6 +80,19 @@
 # * As mensagens são recarregadas por completo no reload.
 # * Pode mudar os tipos a vontade.
 # * O valor da placeholder não é afetado pelo tipo de mensagem. Pode utilizar qual você quiser.
+Ajuda: '&cNão há nenhum comando no momento.'
+Ajuda-staff:
+  - ''
+  - '           &6&lCAIXAS'
+  - '  &fLista de comandos &c&oSTAFF'
+  - ''
+  - '&f/mito localizador <caixa> &8- &fPegar o localizador de uma caixa.'
+  - '&f/mito darkey <jogador> <caixa> <quantia> &8- &fEnviar keys para um jogador.'
+  - '&f/mito darkeyall <caixa> <quantia> &8- &fEnviar keys para todos os jogadores online.'
+  - '&f/mito recompensas <caixa> &8- &fEditar recompensas de uma caixa'
+  - '&f/mito reload &8- &fRecarregar configurações'
+  - '&f/mito ajuda &8- &fMostrar a lista de comandos'
+  - ''
 Jogador-offline: '&cO jogador @jogador se encontra offline.'
 Quantia-invalida: '&cInsira uma quantia válida.'
 Reload-sucesso: '&aConfigurações recarregadas com sucesso.'

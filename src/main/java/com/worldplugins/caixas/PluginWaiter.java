@@ -108,12 +108,14 @@ public class PluginWaiter {
         final KeyFactory keyFactory = new KeyFactory(mainConfig);
 
         registry.command(
+            new Help(),
             new Reload(configManager, configCacheManager, menuContainerManager, crateManager),
             new GiveLocator(mainConfig),
             new GiveKey(keyFactory, mainConfig),
             new GiveKeyAll(keyFactory, mainConfig),
             new Rewards(mainConfig)
         );
+        registry.autoTabCompleter("caixas");
         registry.registerAll();
     }
 
