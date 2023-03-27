@@ -38,9 +38,9 @@ public class RewardsController {
             return;
         }
 
-        final int totalPages = data.itemCount == 0
+        final int totalPages = data.itemCount == 0 && data.itemCount == mainConfig.get().getRewardsSlots().size()
             ? 1
-            : data.itemCount / mainConfig.get().getRewardsSlots().size();
+            : data.itemCount / mainConfig.get().getRewardsSlots().size() + 1;
         player.openView(CrateRewardsView.class, new CrateRewardsView.Context(
             crateId, page, totalPages, data.pageItems
         ));
