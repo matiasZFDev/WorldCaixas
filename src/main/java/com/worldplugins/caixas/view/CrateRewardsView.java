@@ -79,11 +79,11 @@ public class CrateRewardsView extends MenuDataView<CrateRewardsView.Context> {
                         rewardItem.name(null);
                         rewardItem = rewardItem.mutableLoreListFormat("@@lore", Collections.emptyList());
                     } else {
-                        rewardItem.mutableNameFormat("@name".to(
-                            item.getItemMeta().hasDisplayName()
-                                ? item.getItemMeta().getDisplayName()
-                                : null
-                        ));
+                        if (item.getItemMeta().hasDisplayName())
+                            rewardItem.mutableNameFormat("@name".to(item.getItemMeta().getDisplayName()));
+                        else
+                            rewardItem.name(null);
+
                         rewardItem.mutableLoreListFormat("@@lore", item.getItemMeta().hasLore()
                             ? item.getItemMeta().getLore()
                             : Collections.emptyList()
