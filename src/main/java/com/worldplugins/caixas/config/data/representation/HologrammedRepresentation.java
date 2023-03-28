@@ -1,6 +1,6 @@
 package com.worldplugins.caixas.config.data.representation;
 
-import com.worldplugins.caixas.util.HologramBuilder;
+import com.worldplugins.lib.util.HologramBuilder;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import me.filoghost.holographicdisplays.api.hologram.Hologram;
