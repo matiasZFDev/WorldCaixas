@@ -44,7 +44,7 @@ public class Rewards implements CommandModule {
         if (!crate.isPresent()) {
             final String types = mainConfig.get().getCrates().getAll().stream()
                 .map(MainConfig.Config.Crate::getId)
-                .collect(Collectors.joining());
+                .collect(Collectors.joining(", "));
             sender.respond("Caixa-inexistente", message -> message.replace(
                 "@tipo".to(crateId),
                 "@lista".to(types)
