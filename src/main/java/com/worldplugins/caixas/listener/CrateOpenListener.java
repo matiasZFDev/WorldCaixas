@@ -77,11 +77,11 @@ public class CrateOpenListener implements Listener {
         if (reward.get().hasItemMeta() && reward.get().getItemMeta().hasDisplayName())
             player.respond("Caixa-aberta", message -> message.replace(
                 "@recompensa".to(reward.get().getItemMeta().getDisplayName()),
-                "@quantia".to(reward.get().getAmount() + "")
+                "@quantia".to(String.valueOf(reward.get().getAmount()))
             ));
         else
             player.respond("Caixa-aberta-sem-nome", message -> message.replace(
-                "@quantia".to(reward.get().getAmount() + "")
+                "@quantia".to(String.valueOf(reward.get().getAmount()))
             ));
     }
 }

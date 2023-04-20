@@ -1,9 +1,10 @@
 package com.worldplugins.caixas.listener;
 
 import com.worldplugins.caixas.NBTKeys;
-import com.worldplugins.caixas.config.MainConfig;
+import com.worldplugins.caixas.config.data.MainData;
 import com.worldplugins.caixas.extension.ResponseExtensions;
 import com.worldplugins.caixas.manager.CrateManager;
+import com.worldplugins.lib.config.cache.ConfigCache;
 import com.worldplugins.lib.extension.GenericExtensions;
 import com.worldplugins.lib.extension.bukkit.NBTExtensions;
 import lombok.NonNull;
@@ -27,7 +28,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public class CrateLocateListener implements Listener {
-    private final @NonNull MainConfig mainConfig;
+    private final @NonNull ConfigCache<MainData> mainConfig;
     private final @NonNull CrateManager crateManager;
 
     @EventHandler
@@ -42,10 +43,10 @@ public class CrateLocateListener implements Listener {
 
         final Player player = event.getPlayer();
         final String crateId = event.getItem().getReference(NBTKeys.CRATE_LOCATOR);
-        final Optional<MainConfig.Config.Crate> crate = mainConfig.get().getCrates().getById(crateId);
+        final Optional<MainData.Crate> crate = mainConfig.data().getCrates().getById(crateId);
 
         if (!crate.isPresent()) {
-            final String crates = mainConfig.get().getCrates().getAll().toString();
+            final String crates = mainConfig.data().getCrates().getAll().toString();
             player.respond("Crate-inexistente", message -> message.replace(
                 "@tipo".to(crateId),
                 "@lista".to(crates)

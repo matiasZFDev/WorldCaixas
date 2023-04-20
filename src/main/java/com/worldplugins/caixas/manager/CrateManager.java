@@ -2,6 +2,7 @@ package com.worldplugins.caixas.manager;
 
 import com.worldplugins.caixas.config.LocationsDataConfig;
 import com.worldplugins.caixas.config.MainConfig;
+import com.worldplugins.caixas.config.data.MainData;
 import com.worldplugins.caixas.config.data.animation.Animation;
 import com.worldplugins.caixas.config.data.representation.CrateRepresentation;
 import com.worldplugins.lib.common.Updatable;
@@ -42,7 +43,7 @@ public class CrateManager implements Updatable {
         return locatedCrates.stream().filter(crate -> crate.getId().equals(id)).findFirst();
     }
 
-    public void locateCrate(@NonNull Location location, @NonNull MainConfig.Config.Crate crate) {
+    public void locateCrate(@NonNull Location location, @NonNull MainData.Crate crate) {
         getLocatedCrate(crate.getId()).ifPresent(this::unlocateCrate);
         final CrateRepresentation.Handler representationHandler = crate.getRepresentation().spawn(plugin, location);
         final Animation animation = crate.getAnimationFactory().create(plugin, location);
@@ -72,8 +73,8 @@ public class CrateManager implements Updatable {
         mainConfig.update();
         locationsDataConfig.update();
 
-        locationsDataConfig.get().getLocations().forEach(current -> {
-            final Optional<MainConfig.Config.Crate> crate = mainConfig.get().getCrates().getById(current.getCrateId());
+        locationsDataConfig.data().getLocations().forEach(current -> {
+            final Optional<MainData.Crate> crate = mainConfig.data().getCrates().getById(current.getCrateId());
 
             if (!crate.isPresent()) {
                 ConfigUtils.update(locationsDataConfig, config -> {

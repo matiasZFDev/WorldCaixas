@@ -12,7 +12,7 @@ import com.worldplugins.lib.extension.bukkit.ItemExtensions;
 import com.worldplugins.lib.util.MenuItemsUtils;
 import com.worldplugins.lib.view.MenuDataView;
 import com.worldplugins.lib.view.ViewContext;
-import com.worldplugins.lib.view.annotation.ViewOf;
+import com.worldplugins.lib.view.annotation.ViewSpec;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.ExtensionMethod;
@@ -32,7 +32,7 @@ import java.util.Collections;
 })
 
 @RequiredArgsConstructor
-@ViewOf(menuContainer = CrateRewardsMenuContainer.class)
+@ViewSpec(menuContainer = CrateRewardsMenuContainer.class)
 public class CrateRewardsView extends MenuDataView<CrateRewardsView.Context> {
     @RequiredArgsConstructor
     public static class Context implements ViewContext {
@@ -71,7 +71,7 @@ public class CrateRewardsView extends MenuDataView<CrateRewardsView.Context> {
                         .name(rewardItemModel.getItemMeta().getDisplayName())
                         .lore(rewardItemModel.getItemMeta().getLore())
                         .loreFormat(
-                            "@posicao".to(position + ""),
+                            "@posicao".to(String.valueOf(position)),
                             "@chance".to(((Double) pair.second().getChance()).plainFormat())
                         );
 
@@ -100,8 +100,8 @@ public class CrateRewardsView extends MenuDataView<CrateRewardsView.Context> {
     public @NonNull String getTitle(@NonNull String title, @NonNull Context data) {
         return title.formatReplace(
             "@caixa".to(data.crateId),
-            "@atual".to((data.page + 1) + ""),
-            "@totais".to(data.totalPages + "")
+            "@atual".to(String.valueOf(data.page + 1)),
+            "@totais".to(String.valueOf(data.totalPages))
         );
     }
 

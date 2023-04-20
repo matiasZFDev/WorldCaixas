@@ -1,12 +1,13 @@
 package com.worldplugins.caixas.command;
 
 import com.worldplugins.caixas.NBTKeys;
-import com.worldplugins.caixas.config.MainConfig;
+import com.worldplugins.caixas.config.data.MainData;
 import com.worldplugins.caixas.extension.ResponseExtensions;
 import com.worldplugins.lib.command.CommandModule;
 import com.worldplugins.lib.command.CommandTarget;
 import com.worldplugins.lib.command.annotation.ArgsChecker;
 import com.worldplugins.lib.command.annotation.Command;
+import com.worldplugins.lib.config.cache.ConfigCache;
 import com.worldplugins.lib.extension.GenericExtensions;
 import com.worldplugins.lib.extension.bukkit.NBTExtensions;
 import com.worldplugins.lib.extension.bukkit.PlayerExtensions;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class GiveLocator implements CommandModule {
-    private final @NonNull MainConfig mainConfig;
+    private final @NonNull ConfigCache<MainData> mainConfig;
 
     @Command(
         name = "caixas localizador",
@@ -42,11 +43,11 @@ public class GiveLocator implements CommandModule {
     public void execute(@NonNull CommandSender sender, @NonNull String[] args) {
         final Player player = (Player) sender;
         final String crateId = args[0];
-        final Optional<MainConfig.Config.Crate> crate = mainConfig.get().getCrates().getById(crateId);
+        final Optional<MainData.Crate> crate = mainConfig.data().getCrates().getById(crateId);
 
         if (!crate.isPresent()) {
-            final String types = mainConfig.get().getCrates().getAll().stream()
-                .map(MainConfig.Config.Crate::getId)
+            final String types = mainConfig.data().getCrates().getAll().stream()
+                .map(MainData.Crate::getId)
                 .collect(Collectors.joining(", "));
             player.respond("Caixa-inexistente", message -> message.replace(
                 "@tipo".to(crateId),
@@ -55,7 +56,7 @@ public class GiveLocator implements CommandModule {
             return;
         }
 
-        final ItemStack locatorItem = mainConfig.get().getLocatorItem()
+        final ItemStack locatorItem = mainConfig.data().getLocatorItem()
             .clone()
             .addReference(NBTKeys.CRATE_LOCATOR, crateId);
         player.giveItems(locatorItem);

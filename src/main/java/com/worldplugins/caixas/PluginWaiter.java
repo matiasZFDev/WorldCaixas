@@ -14,6 +14,7 @@ import com.worldplugins.caixas.view.CrateRewardsPageView;
 import com.worldplugins.caixas.view.CrateRewardsView;
 import com.worldplugins.lib.api.storage.item.configuration.shelving.ShelvingConfigurationItemStorage;
 import com.worldplugins.lib.common.Factory;
+import com.worldplugins.lib.config.cache.ConfigCache;
 import com.worldplugins.lib.config.cache.impl.EffectsConfig;
 import com.worldplugins.lib.config.cache.impl.MessagesConfig;
 import com.worldplugins.lib.config.cache.impl.SoundsConfig;
@@ -102,18 +103,21 @@ public class PluginWaiter {
         );
     }
 
+    private <T> T config(@NonNull Class<? extends ConfigCache<?>> key) {
+        return configCacheManager.get(key);
+    }
+
     private void registerCommands() {
         final CommandRegistry registry = new CommandRegistry(plugin);
-        final MainConfig mainConfig = configCacheManager.get(MainConfig.class);
-        final KeyFactory keyFactory = new KeyFactory(mainConfig);
+        final KeyFactory keyFactory = new KeyFactory(config(MainConfig.class));
 
         registry.command(
             new Help(),
             new Reload(configManager, configCacheManager, menuContainerManager, crateManager),
-            new GiveLocator(mainConfig),
-            new GiveKey(keyFactory, mainConfig),
-            new GiveKeyAll(keyFactory, mainConfig),
-            new Rewards(mainConfig)
+            new GiveLocator(config(MainConfig.class)),
+            new GiveKey(keyFactory, config(MainConfig.class)),
+            new GiveKeyAll(keyFactory, config(MainConfig.class)),
+            new Rewards(config(MainConfig.class))
         );
         registry.autoTabCompleter("caixas");
         registry.registerAll();

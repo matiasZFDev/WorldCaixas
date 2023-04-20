@@ -1,9 +1,5 @@
-package com.worldplugins.caixas.config.data;
+package com.worldplugins.caixas.config.data.animation;
 
-import com.worldplugins.caixas.config.data.animation.AnimationFactory;
-import com.worldplugins.caixas.config.data.animation.BlockMutationAnimationFactory;
-import com.worldplugins.caixas.config.data.animation.DropAnimationFactory;
-import com.worldplugins.caixas.config.data.animation.EffectAnimationFactory;
 import lombok.NonNull;
 import org.bukkit.configuration.ConfigurationSection;
 

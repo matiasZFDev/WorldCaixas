@@ -1,9 +1,7 @@
 package com.worldplugins.caixas.config;
 
-import com.worldplugins.lib.common.Logger;
-import com.worldplugins.lib.config.bukkit.ConfigContainer;
-import com.worldplugins.lib.config.cache.StateConfig;
-import com.worldplugins.lib.config.cache.annotation.Config;
+import com.worldplugins.lib.config.cache.InjectedConfigCache;
+import com.worldplugins.lib.config.cache.annotation.ConfigSpec;
 import com.worldplugins.lib.extension.CollectionExtensions;
 import com.worldplugins.lib.extension.GenericExtensions;
 import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
@@ -22,15 +20,9 @@ import java.util.stream.Stream;
     CollectionExtensions.class
 }, suppressBaseMethods = false)
 
-@Config(path = "recompensas")
-public class RewardsDataConfig extends StateConfig<Map<String, List<String>>> {
-
-    public RewardsDataConfig(Logger logger, @NonNull ConfigContainer configContainer) {
-        super(logger, configContainer);
-    }
-
-    @Override
-    public @NonNull Map<String, List<String>> fetch(@NonNull FileConfiguration config) {
+public class RewardsDataConfig implements InjectedConfigCache<Map<String, List<String>>> {
+    @ConfigSpec(path = "recompensas")
+    public @NonNull Map<String, List<String>> transform(@NonNull FileConfiguration config) {
         return config.getConfigurationSection("Data")
             .mapWithKeys((key, section) -> {
                 final List<String> pages = ((Stream<String>) section.getKeys(false).stream())

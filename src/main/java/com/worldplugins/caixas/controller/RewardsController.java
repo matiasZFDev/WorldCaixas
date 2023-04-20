@@ -1,11 +1,12 @@
 package com.worldplugins.caixas.controller;
 
-import com.worldplugins.caixas.config.MainConfig;
+import com.worldplugins.caixas.config.data.MainData;
 import com.worldplugins.caixas.extension.ViewExtensions;
 import com.worldplugins.caixas.rewards.ChanceReward;
 import com.worldplugins.caixas.view.CrateRewardsView;
 import com.worldplugins.lib.api.storage.item.configuration.shelving.ShelvingConfigurationItemStorage;
 import com.worldplugins.lib.common.Pair;
+import com.worldplugins.lib.config.cache.ConfigCache;
 import com.worldplugins.lib.extension.CollectionExtensions;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class RewardsController {
         private final @NonNull Collection<Pair<Integer, ChanceReward>> pageItems;
         private final int itemCount;
     }
-    private final @NonNull MainConfig mainConfig;
+    private final @NonNull ConfigCache<MainData> mainConfig;
     private final @NonNull ShelvingConfigurationItemStorage<ChanceReward> itemStorage;
 
     public void updateView(@NonNull Player player, @NonNull String crateId, int page) {
@@ -38,9 +39,9 @@ public class RewardsController {
             return;
         }
 
-        final int totalPages = data.itemCount == 0 && data.itemCount == mainConfig.get().getRewardsSlots().size()
+        final int totalPages = data.itemCount == 0 && data.itemCount == mainConfig.data().getRewardsSlots().size()
             ? 1
-            : data.itemCount / mainConfig.get().getRewardsSlots().size() + 1;
+            : data.itemCount / mainConfig.data().getRewardsSlots().size() + 1;
         player.openView(CrateRewardsView.class, new CrateRewardsView.Context(
             crateId, page, totalPages, data.pageItems
         ));
@@ -49,10 +50,10 @@ public class RewardsController {
     private @NonNull Data getPageItems(@NonNull String crateId, int page) {
         final Collection<ChanceReward> nonNullItems = getNonNullItems(crateId);
         final List<ChanceReward> pageItems = nonNullItems.stream()
-            .skip((long) page * mainConfig.get().getRewardsSlots().size())
-            .limit(mainConfig.get().getRewardsSlots().size())
+            .skip((long) page * mainConfig.data().getRewardsSlots().size())
+            .limit(mainConfig.data().getRewardsSlots().size())
             .collect(Collectors.toList());
-        return new Data(mainConfig.get().getRewardsSlots().zip(pageItems), nonNullItems.size());
+        return new Data(mainConfig.data().getRewardsSlots().zip(pageItems), nonNullItems.size());
     }
 
     private @NonNull Collection<ChanceReward> getNonNullItems(@NonNull String crateId) {
