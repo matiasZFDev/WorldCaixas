@@ -13,11 +13,9 @@ import com.worldplugins.lib.manager.config.ConfigManager;
 import com.worldplugins.lib.registry.ConfigCacheRegistry;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.bukkit.plugin.Plugin;
 
 @RequiredArgsConstructor
 public class ConfigCacheInitializer implements Initializer<ConfigCacheManager> {
-    private final @NonNull Plugin plugin;
     private final @NonNull ConfigManager configManager;
 
     @Override

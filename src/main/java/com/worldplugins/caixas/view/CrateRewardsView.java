@@ -97,7 +97,7 @@ public class CrateRewardsView extends MenuDataView<CrateRewardsView.Context> {
     }
 
     @Override
-    public @NonNull String getTitle(@NonNull String title, @NonNull Context data) {
+    public @NonNull String getTitle(@NonNull String title, @NonNull Context data, @NonNull MenuData menuData) {
         return title.formatReplace(
             "@caixa".to(data.crateId),
             "@atual".to(String.valueOf(data.page + 1)),

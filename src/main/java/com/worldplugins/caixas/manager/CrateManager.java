@@ -1,11 +1,11 @@
 package com.worldplugins.caixas.manager;
 
-import com.worldplugins.caixas.config.LocationsDataConfig;
-import com.worldplugins.caixas.config.MainConfig;
+import com.worldplugins.caixas.config.data.LocationsData;
 import com.worldplugins.caixas.config.data.MainData;
 import com.worldplugins.caixas.config.data.animation.Animation;
 import com.worldplugins.caixas.config.data.representation.CrateRepresentation;
 import com.worldplugins.lib.common.Updatable;
+import com.worldplugins.lib.config.cache.ConfigCache;
 import com.worldplugins.lib.util.ConfigUtils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -35,8 +35,8 @@ public class CrateManager implements Updatable {
     }
 
     private final @NonNull Plugin plugin;
-    private final @NonNull MainConfig mainConfig;
-    private final @NonNull LocationsDataConfig locationsDataConfig;
+    private final @NonNull ConfigCache<MainData> mainConfig;
+    private final @NonNull ConfigCache<LocationsData> locationsDataConfig;
     private final @NonNull List<LocatedCrate> locatedCrates = new ArrayList<>();
 
     private @NonNull Optional<LocatedCrate> getLocatedCrate(@NonNull String id) {

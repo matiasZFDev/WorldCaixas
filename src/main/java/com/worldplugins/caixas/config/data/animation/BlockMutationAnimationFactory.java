@@ -47,6 +47,7 @@ public class BlockMutationAnimationFactory implements AnimationFactory {
         private final LinkedList<BlockData> blocks;
         private int taskId = -1;
 
+        @SuppressWarnings("deprecation")
         public BlockMutationAnimation(
             @NonNull Plugin plugin,
             @NonNull Location location,
@@ -74,6 +75,7 @@ public class BlockMutationAnimationFactory implements AnimationFactory {
             taskId = Bukkit.getScheduler().runTaskTimer(plugin, this::animation, 1L, 1L).getTaskId();
         }
 
+        @SuppressWarnings("deprecation")
         private void animation() {
             if (currentPause > 0) {
                 currentPause--;

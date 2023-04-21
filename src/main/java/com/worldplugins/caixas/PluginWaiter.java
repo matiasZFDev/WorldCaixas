@@ -50,16 +50,14 @@ public class PluginWaiter {
     public PluginWaiter(@NonNull JavaPlugin plugin) {
         this.plugin = plugin;
         configManager = new YamlConfigManager(plugin);
-        configCacheManager = new ConfigCacheInitializer(plugin, configManager).init();
+        configCacheManager = new ConfigCacheInitializer(configManager).init();
         menuContainerManager = new MenuContainerManagerImpl();
         viewManager = new ViewManagerImpl();
-        crateManager = new CrateManager(
-            plugin, configCacheManager.get(MainConfig.class), configCacheManager.get(LocationsDataConfig.class)
-        );
+        crateManager = new CrateManager(plugin, config(MainConfig.class), config(LocationsDataConfig.class));
         itemStorage = new ShelvingConfigurationItemStorage<>(
-            36, configCacheManager.get(RewardsDataConfig.class), ChanceReward[]::new
+            36, config(RewardsDataConfig.class), ChanceReward[]::new
         );
-        rewardsController = new RewardsController(configCacheManager.get(MainConfig.class), itemStorage);
+        rewardsController = new RewardsController(config(MainConfig.class), itemStorage);
     }
 
     /**
@@ -75,9 +73,9 @@ public class PluginWaiter {
     }
 
     private void prepareGlobalAccess() {
-        GlobalAccess.setMessages(configCacheManager.get(MessagesConfig.class));
-        GlobalAccess.setSounds(configCacheManager.get(SoundsConfig.class));
-        GlobalAccess.setEffects(configCacheManager.get(EffectsConfig.class));
+        GlobalAccess.setMessages(config(MessagesConfig.class));
+        GlobalAccess.setSounds(config(SoundsConfig.class));
+        GlobalAccess.setEffects(config(EffectsConfig.class));
         GlobalAccess.setViewManager(viewManager);
     }
 
@@ -95,7 +93,7 @@ public class PluginWaiter {
     private void registerListeners() {
         final CrateRewardHelper rewardHelper = new CrateRewardHelper(itemStorage);
         regListeners(
-            new CrateLocateListener(configCacheManager.get(MainConfig.class), crateManager),
+            new CrateLocateListener(config(MainConfig.class), crateManager),
             new CrateUnlocateListener(crateManager),
             new CrateAnimationListener(),
             new CrateRewardsOverviewListener(crateManager, rewardsController),
