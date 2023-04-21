@@ -37,7 +37,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @RequiredArgsConstructor
-public class PluginWaiter {
+public class PluginExecutor {
     private final @NonNull JavaPlugin plugin;
     private final @NonNull ConfigManager configManager;
     private final @NonNull ConfigCacheManager configCacheManager;
@@ -47,7 +47,7 @@ public class PluginWaiter {
     private final ShelvingConfigurationItemStorage<ChanceReward> itemStorage;
     private final @NonNull RewardsController rewardsController;
 
-    public PluginWaiter(@NonNull JavaPlugin plugin) {
+    public PluginExecutor(@NonNull JavaPlugin plugin) {
         this.plugin = plugin;
         configManager = new YamlConfigManager(plugin);
         configCacheManager = new ConfigCacheInitializer(configManager).init();

@@ -7,7 +7,7 @@ public class WorldCaixas extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        onDisable = new PluginWaiter(this).execute();
+        onDisable = new PluginExecutor(this).execute();
     }
 
     @Override
