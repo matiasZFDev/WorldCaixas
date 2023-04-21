@@ -16,7 +16,6 @@ import lombok.experimental.ExtensionMethod;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ExtensionMethod({
@@ -40,9 +39,9 @@ public class Rewards implements CommandModule {
     public void execute(@NonNull CommandSender sender, @NonNull String[] args) {
         final Player player = (Player) sender;
         final String crateId = args[0];
-        final Optional<MainData.Crate> crate = mainConfig.data().getCrates().getById(crateId);
+        final MainData.Crate crate = mainConfig.data().getCrates().getById(crateId);
 
-        if (!crate.isPresent()) {
+        if (crate == null) {
             final String types = mainConfig.data().getCrates().getAll().stream()
                 .map(MainData.Crate::getId)
                 .collect(Collectors.joining(", "));

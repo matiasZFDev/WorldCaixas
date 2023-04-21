@@ -13,8 +13,6 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 
-import java.util.Optional;
-
 @ExtensionMethod({
     ColorExtensions.class,
     ResponseExtensions.class,
@@ -39,24 +37,24 @@ public class RewardChanceConversation extends StringPrompt {
             return null;
         }
 
-        final Optional<Double> chance = parseDouble(value);
+        final Double chance = parseDouble(value);
 
-        if (!chance.isPresent()) {
+        if (chance == null) {
             player.respond("Recompensa-editar-chance-invalida");
             return null;
         }
 
         player.openView(CrateRewardEditView.class, currentContext.changeReward(
-            new ChanceReward(currentContext.getCurrentReward().getBukkitItem(), chance.get())
+            new ChanceReward(currentContext.getCurrentReward().getBukkitItem(), chance)
         ));
         return null;
     }
 
-    private @NonNull Optional<Double> parseDouble(@NonNull String value) {
+    private Double parseDouble(@NonNull String value) {
         try {
-            return Optional.of(Double.parseDouble(value));
+            return Double.parseDouble(value);
         } catch (NumberFormatException e) {
-            return Optional.empty();
+            return null;
         }
     }
 }

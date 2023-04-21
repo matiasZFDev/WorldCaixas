@@ -18,8 +18,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.Optional;
-
 @ExtensionMethod({
     NBTExtensions.class,
     ResponseExtensions.class,
@@ -43,9 +41,9 @@ public class CrateLocateListener implements Listener {
 
         final Player player = event.getPlayer();
         final String crateId = event.getItem().getReference(NBTKeys.CRATE_LOCATOR);
-        final Optional<MainData.Crate> crate = mainConfig.data().getCrates().getById(crateId);
+        final MainData.Crate crate = mainConfig.data().getCrates().getById(crateId);
 
-        if (!crate.isPresent()) {
+        if (crate == null) {
             final String crates = mainConfig.data().getCrates().getAll().toString();
             player.respond("Crate-inexistente", message -> message.replace(
                 "@tipo".to(crateId),
@@ -58,7 +56,7 @@ public class CrateLocateListener implements Listener {
         final Location location = event.getClickedBlock().getLocation().clone().add(
             blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()
         );
-        crateManager.locateCrate(location, crate.get());
+        crateManager.locateCrate(location, crate);
         player.respond("Caixa-localizada");
     }
 }

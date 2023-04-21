@@ -9,8 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 public class CrateRewardsOverviewListener implements Listener {
     private final @NonNull CrateManager crateManager;
@@ -21,13 +19,13 @@ public class CrateRewardsOverviewListener implements Listener {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK)
             return;
 
-        final Optional<CrateManager.LocatedCrate> crate = crateManager.getLocatedCrate(
+        final CrateManager.LocatedCrate crate = crateManager.getLocatedCrate(
             event.getClickedBlock().getLocation()
         );
 
-        if (!crate.isPresent())
+        if (crate == null)
             return;
 
-        rewardsController.updateView(event.getPlayer(), crate.get().getId(), 0);
+        rewardsController.updateView(event.getPlayer(), crate.getId(), 0);
     }
 }

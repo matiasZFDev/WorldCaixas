@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Getter
@@ -28,8 +27,8 @@ public class MainData {
     public static class Crates {
         private final @NonNull List<Crate> crates;
 
-        public @NonNull Optional<Crate> getById(@NonNull String id) {
-            return crates.stream().filter(it -> it.getId().equals(id)).findFirst();
+        public Crate getById(@NonNull String id) {
+            return crates.stream().filter(it -> it.getId().equals(id)).findFirst().orElse(null);
         }
 
         public @NonNull Collection<Crate> getAll() {

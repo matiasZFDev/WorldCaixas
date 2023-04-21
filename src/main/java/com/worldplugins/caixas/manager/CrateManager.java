@@ -6,14 +6,20 @@ import com.worldplugins.caixas.config.data.animation.Animation;
 import com.worldplugins.caixas.config.data.representation.CrateRepresentation;
 import com.worldplugins.lib.common.Updatable;
 import com.worldplugins.lib.config.cache.ConfigCache;
+import com.worldplugins.lib.extension.GenericExtensions;
 import com.worldplugins.lib.util.ConfigUtils;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.ExtensionMethod;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 
 import java.util.*;
+
+@ExtensionMethod({
+    GenericExtensions.class
+})
 
 @RequiredArgsConstructor
 public class CrateManager implements Updatable {
@@ -39,12 +45,15 @@ public class CrateManager implements Updatable {
     private final @NonNull ConfigCache<LocationsData> locationsDataConfig;
     private final @NonNull List<LocatedCrate> locatedCrates = new ArrayList<>();
 
-    private @NonNull Optional<LocatedCrate> getLocatedCrate(@NonNull String id) {
-        return locatedCrates.stream().filter(crate -> crate.getId().equals(id)).findFirst();
+    private LocatedCrate getLocatedCrate(@NonNull String id) {
+        return locatedCrates.stream()
+            .filter(crate -> crate.getId().equals(id))
+            .findFirst()
+            .orElse(null);
     }
 
     public void locateCrate(@NonNull Location location, @NonNull MainData.Crate crate) {
-        getLocatedCrate(crate.getId()).ifPresent(this::unlocateCrate);
+        getLocatedCrate(crate.getId()).ifNotNull(this::unlocateCrate);
         final CrateRepresentation.Handler representationHandler = crate.getRepresentation().spawn(plugin, location);
         final Animation animation = crate.getAnimationFactory().create(plugin, location);
         animation.run();
@@ -54,8 +63,11 @@ public class CrateManager implements Updatable {
         });
     }
 
-    public @NonNull Optional<LocatedCrate> getLocatedCrate(@NonNull Location location) {
-        return locatedCrates.stream().filter(crate -> crate.getLocation().equals(location)).findFirst();
+    public LocatedCrate getLocatedCrate(@NonNull Location location) {
+        return locatedCrates.stream()
+            .filter(crate -> crate.getLocation().equals(location))
+            .findFirst()
+            .orElse(null);
     }
 
     public void unlocateCrate(@NonNull LocatedCrate locatedCrate) {
@@ -74,16 +86,16 @@ public class CrateManager implements Updatable {
         locationsDataConfig.update();
 
         locationsDataConfig.data().getLocations().forEach(current -> {
-            final Optional<MainData.Crate> crate = mainConfig.data().getCrates().getById(current.getCrateId());
+            final MainData.Crate crate = mainConfig.data().getCrates().getById(current.getCrateId());
 
-            if (!crate.isPresent()) {
+            if (crate == null) {
                 ConfigUtils.update(locationsDataConfig, config -> {
                     config.set("Data." + current.getCrateId(), null);
                 });
                 return;
             }
 
-            locateCrate(current.getLocation(), crate.get());
+            locateCrate(current.getLocation(), crate);
         });
     }
 

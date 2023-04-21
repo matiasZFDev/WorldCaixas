@@ -70,9 +70,12 @@ public class MainConfig implements InjectedConfigCache<MainData> {
     private @NonNull AnimationFactory fetchAnimations(@NonNull ConfigurationSection section) {
         return new AnimationCompoundFactory(section.map(current -> {
             final String type = current.getString("Tipo");
-            return AnimationType
-                .find(type).orElseThrow(() -> new Error("Não existe nenhuma animação do tipo '" + type + "'."))
-                .getFactory(current);
+            final AnimationType animationType = AnimationType.find(type);
+
+            if (animationType == null)
+                throw new Error("Não existe nenhuma animação do tipo '" + type + "'.");
+
+            return animationType.getFactory(current);
         }));
     }
 }

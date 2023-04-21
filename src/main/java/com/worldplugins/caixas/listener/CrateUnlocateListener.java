@@ -9,8 +9,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
-import java.util.Optional;
-
 @ExtensionMethod({
     ResponseExtensions.class
 })
@@ -21,9 +19,9 @@ public class CrateUnlocateListener implements Listener {
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
-        final Optional<CrateManager.LocatedCrate> crate = crateManager.getLocatedCrate(event.getBlock().getLocation());
+        final CrateManager.LocatedCrate crate = crateManager.getLocatedCrate(event.getBlock().getLocation());
 
-        if (!crate.isPresent())
+        if (crate == null)
             return;
 
         if (!event.getPlayer().hasPermission("worldcaixas.retirarcaixa")) {
@@ -38,7 +36,7 @@ public class CrateUnlocateListener implements Listener {
             return;
         }
 
-        crateManager.unlocateCrate(crate.get());
+        crateManager.unlocateCrate(crate);
         event.getPlayer().respond("Caixa-retirada");
     }
 }

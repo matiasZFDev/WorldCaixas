@@ -18,7 +18,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ExtensionMethod({
@@ -55,9 +54,9 @@ public class GiveKey implements CommandModule {
 
         final Integer amount = Integer.parseInt(args[2]);
         final String crateId = args[1];
-        final Optional<ItemStack> keyItem = keyFactory.create(crateId);
+        final ItemStack keyItem = keyFactory.create(crateId);
 
-        if (!keyItem.isPresent()) {
+        if (keyItem == null) {
             final String types = mainConfig.data().getCrates().getAll().stream()
                 .map(MainData.Crate::getId)
                 .collect(Collectors.joining(", "));
@@ -68,8 +67,8 @@ public class GiveKey implements CommandModule {
             return;
         }
 
-        keyItem.get().setAmount(amount);
-        receiver.giveItems(keyItem.get());
+        keyItem.setAmount(amount);
+        receiver.giveItems(keyItem);
         sender.respond("Chaves-enviadas", message -> message.replace(
             "@tipo".to(crateId),
             "@quantia".to(amount.suffixed()),

@@ -17,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @ExtensionMethod({
@@ -47,9 +46,9 @@ public class GiveKeyAll implements CommandModule {
 
         final Integer amount = Integer.parseInt(args[1]);
         final String crateId = args[0];
-        final Optional<ItemStack> keyItem = keyFactory.create(crateId);
+        final ItemStack keyItem = keyFactory.create(crateId);
 
-        if (!keyItem.isPresent()) {
+        if (keyItem == null) {
             final String types = mainConfig.data().getCrates().getAll().stream()
                 .map(MainData.Crate::getId)
                 .collect(Collectors.joining(", "));
@@ -60,8 +59,8 @@ public class GiveKeyAll implements CommandModule {
             return;
         }
 
-        keyItem.get().setAmount(amount);
-        Bukkit.getOnlinePlayers().forEach(player -> player.giveItems(keyItem.get().clone()));
+        keyItem.setAmount(amount);
+        Bukkit.getOnlinePlayers().forEach(player -> player.giveItems(keyItem.clone()));
         sender.respond("Chaves-enviadas-todos", message -> message.replace(
             "@tipo".to(crateId),
             "@quantia".to(amount.suffixed())

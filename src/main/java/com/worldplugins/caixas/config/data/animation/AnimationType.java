@@ -4,7 +4,6 @@ import lombok.NonNull;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 public enum AnimationType {
     DROP("DROP") {
@@ -34,9 +33,10 @@ public enum AnimationType {
 
     public abstract @NonNull AnimationFactory getFactory(@NonNull ConfigurationSection section);
 
-    public static @NonNull Optional<AnimationType> find(@NonNull String name) {
+    public static AnimationType find(@NonNull String name) {
         return Arrays.stream(values())
             .filter(type -> type.configName.equals(name))
-            .findFirst();
+            .findFirst()
+            .orElse(null);
     }
 }

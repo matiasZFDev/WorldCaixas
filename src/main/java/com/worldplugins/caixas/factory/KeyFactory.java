@@ -6,14 +6,12 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 public class KeyFactory {
     private final @NonNull ConfigCache<MainData> mainConfig;
 
-    public @NonNull Optional<ItemStack> create(@NonNull String id) {
-        final Optional<MainData.Crate> crate = mainConfig.data().getCrates().getById(id);
-        return crate.map(it -> it.getKeyItem().clone());
+    public ItemStack create(@NonNull String id) {
+        final MainData.Crate crate = mainConfig.data().getCrates().getById(id);
+        return crate == null ? null : crate.getKeyItem().clone();
     }
 }

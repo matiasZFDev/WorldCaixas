@@ -17,8 +17,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Optional;
-
 @ExtensionMethod({
     NBTExtensions.class,
     ResponseExtensions.class,
@@ -42,14 +40,14 @@ public class CrateOpenListener implements Listener {
         event.setCancelled(true);
 
         final Player player = event.getPlayer();
-        final Optional<CrateManager.LocatedCrate> crate = crateManager.getLocatedCrate(
+        final CrateManager.LocatedCrate crate = crateManager.getLocatedCrate(
             event.getClickedBlock().getLocation()
         );
 
-        if (!crate.isPresent())
+        if (crate == null)
             return;
 
-        final String crateId = crate.get().getId();
+        final String crateId = crate.getId();
 
         if (player.isSneaking()) {
             final int keys = event.getItem().getAmount();
@@ -65,23 +63,23 @@ public class CrateOpenListener implements Listener {
     }
 
     private void openCrate(@NonNull String crateId, @NonNull Player player) {
-        final Optional<ItemStack> reward = crateRewardHelper.openCrate(crateId);
+        final ItemStack reward = crateRewardHelper.openCrate(crateId);
 
-        if (!reward.isPresent()) {
+        if (reward == null) {
             player.respond("Caixa-aberta-nada");
             return;
         }
 
-        player.giveItems(reward.get());
+        player.giveItems(reward);
 
-        if (reward.get().hasItemMeta() && reward.get().getItemMeta().hasDisplayName())
+        if (reward.hasItemMeta() && reward.getItemMeta().hasDisplayName())
             player.respond("Caixa-aberta", message -> message.replace(
-                "@recompensa".to(reward.get().getItemMeta().getDisplayName()),
-                "@quantia".to(String.valueOf(reward.get().getAmount()))
+                "@recompensa".to(reward.getItemMeta().getDisplayName()),
+                "@quantia".to(String.valueOf(reward.getAmount()))
             ));
         else
             player.respond("Caixa-aberta-sem-nome", message -> message.replace(
-                "@quantia".to(String.valueOf(reward.get().getAmount()))
+                "@quantia".to(String.valueOf(reward.getAmount()))
             ));
     }
 }
