@@ -1,9 +1,6 @@
 package com.worldplugins.caixas;
 
 import com.worldplugins.lib.config.cache.ConfigCache;
-import com.worldplugins.lib.config.cache.impl.EffectsConfig;
-import com.worldplugins.lib.config.cache.impl.MessagesConfig;
-import com.worldplugins.lib.config.cache.impl.SoundsConfig;
 import com.worldplugins.lib.config.response.effect.PlayerEffect;
 import com.worldplugins.lib.config.response.message.SubjectMessage;
 import com.worldplugins.lib.config.response.sound.PlayerSound;

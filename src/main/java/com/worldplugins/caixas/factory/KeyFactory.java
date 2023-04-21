@@ -1,6 +1,5 @@
 package com.worldplugins.caixas.factory;
 
-import com.worldplugins.caixas.config.MainConfig;
 import com.worldplugins.caixas.config.data.MainData;
 import com.worldplugins.lib.config.cache.ConfigCache;
 import lombok.NonNull;
