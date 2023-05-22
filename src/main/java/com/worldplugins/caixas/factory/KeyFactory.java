@@ -1,17 +1,19 @@
 package com.worldplugins.caixas.factory;
 
 import com.worldplugins.caixas.config.data.MainData;
-import com.worldplugins.lib.config.cache.ConfigCache;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import me.post.lib.config.model.ConfigModel;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
 public class KeyFactory {
-    private final @NonNull ConfigCache<MainData> mainConfig;
+    private final @NotNull ConfigModel<MainData> mainConfig;
 
-    public ItemStack create(@NonNull String id) {
-        final MainData.Crate crate = mainConfig.data().getCrates().getById(id);
+    public KeyFactory(@NotNull ConfigModel<MainData> mainConfig) {
+        this.mainConfig = mainConfig;
+    }
+
+    public ItemStack create(@NotNull String id) {
+        final MainData.Crate crate = mainConfig.data().crates().getById(id);
         return crate == null ? null : crate.getKeyItem().clone();
     }
 }

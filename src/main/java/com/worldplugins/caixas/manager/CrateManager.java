@@ -4,35 +4,41 @@ import com.worldplugins.caixas.config.data.LocationsData;
 import com.worldplugins.caixas.config.data.MainData;
 import com.worldplugins.caixas.config.data.animation.Animation;
 import com.worldplugins.caixas.config.data.representation.CrateRepresentation;
-import com.worldplugins.lib.common.Updatable;
-import com.worldplugins.lib.config.cache.ConfigCache;
-import com.worldplugins.lib.extension.GenericExtensions;
-import com.worldplugins.lib.util.ConfigUtils;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
+import me.post.lib.common.Updatable;
+import me.post.lib.config.model.ConfigModel;
+import me.post.lib.util.Configurations;
+import me.post.lib.util.Scheduler;
 import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-@ExtensionMethod({
-    GenericExtensions.class
-})
-
-@RequiredArgsConstructor
 public class CrateManager implements Updatable {
-
-
-    @RequiredArgsConstructor
     public static class LocatedCrate {
-        @Getter
-        private final @NonNull String id;
-        @Getter
-        private final @NonNull Location location;
-        private final @NonNull CrateRepresentation.Handler representationHandler;
-        private final @NonNull Animation animation;
+        private final @NotNull String id;
+        private final @NotNull Location location;
+        private final @NotNull CrateRepresentation.Handler representationHandler;
+        private final @NotNull Animation animation;
+
+        public LocatedCrate(
+            @NotNull String id,
+            @NotNull Location location,
+            @NotNull CrateRepresentation.Handler representationHandler,
+            @NotNull Animation animation
+        ) {
+            this.id = id;
+            this.location = location;
+            this.representationHandler = representationHandler;
+            this.animation = animation;
+        }
+
+        public @NotNull String id() {
+            return id;
+        }
+
+        public @NotNull Location location() {
+            return location;
+        }
 
         private void disable() {
             representationHandler.remove();
@@ -40,42 +46,58 @@ public class CrateManager implements Updatable {
         }
     }
 
-    private final @NonNull Plugin plugin;
-    private final @NonNull ConfigCache<MainData> mainConfig;
-    private final @NonNull ConfigCache<LocationsData> locationsDataConfig;
-    private final @NonNull List<LocatedCrate> locatedCrates = new ArrayList<>();
+    private final @NotNull Scheduler scheduler;
+    private final @NotNull ConfigModel<MainData> mainConfig;
+    private final @NotNull ConfigModel<LocationsData> locationsDataConfig;
+    private final @NotNull Collection<LocatedCrate> locatedCrates;
 
-    private LocatedCrate getLocatedCrate(@NonNull String id) {
+    public CrateManager(
+        @NotNull Scheduler scheduler,
+        @NotNull ConfigModel<MainData> mainConfig,
+        @NotNull ConfigModel<LocationsData> locationsDataConfig
+    ) {
+        this.scheduler = scheduler;
+        this.mainConfig = mainConfig;
+        this.locationsDataConfig = locationsDataConfig;
+        this.locatedCrates = new ArrayList<>();
+    }
+
+    private LocatedCrate getLocatedCrate(@NotNull String id) {
         return locatedCrates.stream()
-            .filter(crate -> crate.getId().equals(id))
+            .filter(crate -> crate.id().equals(id))
             .findFirst()
             .orElse(null);
     }
 
-    public void locateCrate(@NonNull Location location, @NonNull MainData.Crate crate) {
-        getLocatedCrate(crate.getId()).ifNotNull(this::unlocateCrate);
-        final CrateRepresentation.Handler representationHandler = crate.getRepresentation().spawn(plugin, location);
-        final Animation animation = crate.getAnimationFactory().create(plugin, location);
+    public void locateCrate(@NotNull Location location, @NotNull MainData.Crate crate) {
+        final LocatedCrate locatedCrate = getLocatedCrate(crate.id());
+
+        if (locatedCrate != null) {
+            unlocateCrate(locatedCrate);
+        }
+
+        final CrateRepresentation.Handler representationHandler = crate.representation().spawn(location);
+        final Animation animation = crate.animationFactory().create(scheduler, location);
         animation.run();
-        locatedCrates.add(new LocatedCrate(crate.getId(), location, representationHandler, animation));
-        ConfigUtils.update(locationsDataConfig, config -> {
-            config.set("Data." + crate.getId(), location);
-        });
+        locatedCrates.add(new LocatedCrate(crate.id(), location, representationHandler, animation));
+        Configurations.update(locationsDataConfig, config ->
+            config.set("Data." + crate.id(), location)
+        );
     }
 
-    public LocatedCrate getLocatedCrate(@NonNull Location location) {
+    public LocatedCrate getLocatedCrate(@NotNull Location location) {
         return locatedCrates.stream()
-            .filter(crate -> crate.getLocation().equals(location))
+            .filter(crate -> crate.location().equals(location))
             .findFirst()
             .orElse(null);
     }
 
-    public void unlocateCrate(@NonNull LocatedCrate locatedCrate) {
+    public void unlocateCrate(@NotNull LocatedCrate locatedCrate) {
         locatedCrate.disable();
-        locatedCrates.removeIf(current -> current.getId().equals(locatedCrate.id));
-        ConfigUtils.update(locationsDataConfig, config -> {
-            config.set("Data." + locatedCrate.getId(), null);
-        });
+        locatedCrates.removeIf(current -> current.id().equals(locatedCrate.id));
+        Configurations.update(locationsDataConfig, config ->
+            config.set("Data." + locatedCrate.id(), null)
+        );
     }
 
     @Override
@@ -85,17 +107,17 @@ public class CrateManager implements Updatable {
         mainConfig.update();
         locationsDataConfig.update();
 
-        locationsDataConfig.data().getLocations().forEach(current -> {
-            final MainData.Crate crate = mainConfig.data().getCrates().getById(current.getCrateId());
+        locationsDataConfig.data().locations().forEach(current -> {
+            final MainData.Crate crate = mainConfig.data().crates().getById(current.crateId());
 
             if (crate == null) {
-                ConfigUtils.update(locationsDataConfig, config -> {
-                    config.set("Data." + current.getCrateId(), null);
-                });
+                Configurations.update(locationsDataConfig, config ->
+                    config.set("Data." + current.crateId(), null)
+                );
                 return;
             }
 
-            locateCrate(current.getLocation(), crate);
+            locateCrate(current.location(), crate);
         });
     }
 

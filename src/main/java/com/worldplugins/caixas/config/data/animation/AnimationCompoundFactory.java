@@ -1,22 +1,24 @@
 package com.worldplugins.caixas.config.data.animation;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import me.post.lib.util.Scheduler;
 import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public class AnimationCompoundFactory implements AnimationFactory {
-    private final @NonNull Collection<AnimationFactory> factories;
+    private final @NotNull Collection<AnimationFactory> factories;
+
+    public AnimationCompoundFactory(@NotNull Collection<AnimationFactory> factories) {
+        this.factories = factories;
+    }
 
     @Override
-    public @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin) {
+    public @NotNull Animation create(@NotNull Scheduler scheduler, @NotNull Location origin) {
         final List<Animation> animations = factories.stream()
-            .map(factory -> factory.create(plugin, origin))
+            .map(factory -> factory.create(scheduler, origin))
             .collect(Collectors.toList());
 
         return new Animation() {

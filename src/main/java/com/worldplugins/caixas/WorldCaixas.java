@@ -12,7 +12,8 @@ public class WorldCaixas extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (onDisable != null)
+        if (onDisable != null) {
             onDisable.run();
+        }
     }
 }

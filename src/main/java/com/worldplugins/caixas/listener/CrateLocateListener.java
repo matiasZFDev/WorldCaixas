@@ -2,14 +2,10 @@ package com.worldplugins.caixas.listener;
 
 import com.worldplugins.caixas.NBTKeys;
 import com.worldplugins.caixas.config.data.MainData;
-import com.worldplugins.caixas.extension.ResponseExtensions;
 import com.worldplugins.caixas.manager.CrateManager;
-import com.worldplugins.lib.config.cache.ConfigCache;
-import com.worldplugins.lib.extension.GenericExtensions;
-import com.worldplugins.lib.extension.bukkit.NBTExtensions;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
+import me.post.deps.nbt_api.nbtapi.NBTCompound;
+import me.post.lib.config.model.ConfigModel;
+import me.post.lib.util.NBTs;
 import org.bukkit.Location;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -17,37 +13,41 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.jetbrains.annotations.NotNull;
 
-@ExtensionMethod({
-    NBTExtensions.class,
-    ResponseExtensions.class,
-    GenericExtensions.class
-})
+import static com.worldplugins.caixas.Response.respond;
+import static me.post.lib.util.Pairs.to;
 
-@RequiredArgsConstructor
 public class CrateLocateListener implements Listener {
-    private final @NonNull ConfigCache<MainData> mainConfig;
-    private final @NonNull CrateManager crateManager;
+    private final @NotNull ConfigModel<MainData> mainConfig;
+    private final @NotNull CrateManager crateManager;
+
+    public CrateLocateListener(@NotNull ConfigModel<MainData> mainConfig, @NotNull CrateManager crateManager) {
+        this.mainConfig = mainConfig;
+        this.crateManager = crateManager;
+    }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        if (!event.hasItem() || event.getAction() != Action.RIGHT_CLICK_BLOCK)
+        if (!event.hasItem() || event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
+        }
 
-        if (!event.getItem().hasReference(NBTKeys.CRATE_LOCATOR))
+        if (!NBTs.hasTag(event.getItem(), NBTKeys.CRATE_LOCATOR)) {
             return;
+        }
 
         event.setCancelled(true);
 
         final Player player = event.getPlayer();
-        final String crateId = event.getItem().getReference(NBTKeys.CRATE_LOCATOR);
-        final MainData.Crate crate = mainConfig.data().getCrates().getById(crateId);
+        final String crateId = NBTs.getTagValue(event.getItem(), NBTKeys.CRATE_LOCATOR, NBTCompound::getString);
+        final MainData.Crate crate = mainConfig.data().crates().getById(crateId);
 
         if (crate == null) {
-            final String crates = mainConfig.data().getCrates().getAll().toString();
-            player.respond("Crate-inexistente", message -> message.replace(
-                "@tipo".to(crateId),
-                "@lista".to(crates)
+            final String crates = mainConfig.data().crates().getAll().toString();
+            respond(player, "Crate-inexistente", message -> message.replace(
+                to("@tipo", crateId),
+                to("@lista", crates)
             ));
             return;
         }
@@ -57,6 +57,6 @@ public class CrateLocateListener implements Listener {
             blockFace.getModX(), blockFace.getModY(), blockFace.getModZ()
         );
         crateManager.locateCrate(location, crate);
-        player.respond("Caixa-localizada");
+        respond(player, "Caixa-localizada");
     }
 }

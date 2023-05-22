@@ -95,12 +95,27 @@ Ajuda-staff:
   - ''
 Jogador-offline: '&cO jogador @jogador se encontra offline.'
 Quantia-invalida: '&cInsira uma quantia válida.'
+
+Reload-permissoes: '&cVocê não tem permissões para recarregar as configurações.'
 Reload-sucesso: '&aConfigurações recarregadas com sucesso.'
+
+Recompensas-permissoes: '&cVocê não tem permissões para gerenciar as recompensas das caixas.'
+Recompensas-uso: '&cArgumentos invalidos. Digite /caixa recompensas <caixa>.'
 Caixa-inexistente: "&cCaixa &n@tipo&c não identificada. Tipos registrados: @lista."
+
+Obter-localizador-permissoes: '&cVocê não tem permissões para obter o localizador.'
+Obter-localizador-uso: '&cArgumentos invalidos. Digite /caixas localizador <caixa>.'
 Localizador-entrego: '&fLocalizador da caixa &7@tipo&f foi entrego.'
+
+Dar-keys-permissoes: '&cVocê não tem permissões para givar keys.'
+Dar-keys-uso: '&cArgumentos invalidos. Digite /caixas darkey <jogador> <caixa> <quantia>'
 Chaves-enviadas: '&fVocê enviou &a@quantiax &fchaves &7@tipo &fpro jogador &a@jogador!'
 Chaves-recebidas: '&fVocê recêbeu &a@quantiax &fchaves &7@tipo&f!'
+
+Dar-key-all-permissoes: '&cVocê não tem permissões para givar keys a todos.'
+Dar-key-all-uso: '&cArgumentos invalidos. Digite /caixas darkeyall <caixa> <quantia>'
 Chaves-enviadas-todos: '&fVocê enviou &a@quantiax &fchaves &7@tipo &fpara todos os jogadores &aonline&f!'
+
 Caixa-localizada: '&eCaixa localizada com sucesso.'
 Retirar-caixa-permissoes: '&cVocê não tem as permissões para retirar caixas.'
 Retirar-caixa-shift:

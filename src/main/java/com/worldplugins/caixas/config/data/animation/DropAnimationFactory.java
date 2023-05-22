@@ -3,36 +3,37 @@ package com.worldplugins.caixas.config.data.animation;
 import java.util.*;
 
 import com.worldplugins.caixas.NBTKeys;
-import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
-import com.worldplugins.lib.extension.bukkit.NBTExtensions;
-import com.worldplugins.lib.util.ItemUtils;
-import lombok.*;
-import lombok.experimental.ExtensionMethod;
+import com.worldplugins.lib.util.ConfigSections;
+import me.post.lib.util.NBTs;
+import me.post.lib.util.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
-@ExtensionMethod({
-    ConfigurationExtensions.class,
-    NBTExtensions.class
-})
-
-@RequiredArgsConstructor
 public class DropAnimationFactory implements AnimationFactory {
-    private final @NonNull ConfigurationSection section;
+    private final @NotNull ConfigurationSection section;
 
-    public @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin) {
+    public DropAnimationFactory(@NotNull ConfigurationSection section) {
+        this.section = section;
+    }
+
+    @Override
+    public @NotNull Animation create(@NotNull Scheduler scheduler, @NotNull Location origin) {
         final Location location = origin.clone().add(new Vector(0.5, 1.0, 0.5));
         return new DropAnimation(
-            plugin,
+            scheduler,
             location,
-            section
-                .getConfigurationSection("Itens")
-                .map(current -> ItemUtils.buildFromSectionNoMeta(current).addReference(NBTKeys.FAKE_DROP, "")),
+            ConfigSections.map(
+                section.getConfigurationSection("Itens"),
+                current -> {
+                    final ItemStack item = ConfigSections.getItem(current);
+                    return NBTs.modifyTags(item, nbtItem -> nbtItem.setBoolean(NBTKeys.FAKE_DROP, true));
+                }
+            ),
             section.getLong("Vida-iten"),
             section.getLong("Delay"),
             (short) section.getInt("Repeticoes"),
@@ -40,31 +41,52 @@ public class DropAnimationFactory implements AnimationFactory {
         );
     }
 
-    @AllArgsConstructor
     public static final class TemporaryItem {
-        @Setter
-        @Getter
         private long timeLeft;
-        @Getter
-        private final @NonNull Item item;
+        private final @NotNull Item item;
+
+        public TemporaryItem(long timeLeft, @NotNull Item item) {
+            this.timeLeft = timeLeft;
+            this.item = item;
+        }
+
+        public long timeLeft() {
+            return timeLeft;
+        }
+
+        public void setTimeLeft(long timeLeft) {
+            this.timeLeft = timeLeft;
+        }
+
+        public @NotNull Item item() {
+            return item;
+        }
     }
 
     public static final class DropAnimation implements Animation {
-        private final @NonNull Plugin plugin;
-        private final @NonNull Location origin;
-        private final @NonNull List<ItemStack> items;
+        private final @NotNull Scheduler scheduler;
+        private final @NotNull Location origin;
+        private final @NotNull List<ItemStack> items;
         private final long itemLifeTime;
         private final long dropDelay;
         private final short repetitions;
         private final long pause;
         private int taskId = -1;
-        private final @NonNull List<TemporaryItem> droppedItems;
+        private final @NotNull List<TemporaryItem> droppedItems;
         private long nextDrop;
         private short nextPause;
         private long resume;
 
-        public DropAnimation(@NonNull Plugin plugin, @NonNull Location origin, @NonNull List<ItemStack> items, long itemLifeTime, long dropDelay, short repetitions, long pause) {
-            this.plugin = plugin;
+        public DropAnimation(
+            @NotNull Scheduler scheduler,
+            @NotNull Location origin,
+            @NotNull List<ItemStack> items,
+            long itemLifeTime,
+            long dropDelay,
+            short repetitions,
+            long pause
+        ) {
+            this.scheduler = scheduler;
             this.origin = origin;
             this.items = items;
             this.itemLifeTime = itemLifeTime;
@@ -77,12 +99,12 @@ public class DropAnimationFactory implements AnimationFactory {
         }
 
 
-        private @NonNull ItemStack rollItem() {
+        private @NotNull ItemStack rollItem() {
             return this.items.get((int) Math.floor((Math.random() * this.items.size())));
         }
 
         public void run() {
-            this.taskId = Bukkit.getScheduler().runTaskTimer(this.plugin, this::animation, 1L, 1L).getTaskId();
+            taskId = scheduler.runTimer(1L, 1L, false, this::animation).getTaskId();
         }
 
         private void animation() {
@@ -90,11 +112,11 @@ public class DropAnimationFactory implements AnimationFactory {
                 this.resume -= 1L;
             } else {
                 this.droppedItems.removeIf(it -> {
-                    if (it.getTimeLeft() > 0L) {
-                        it.setTimeLeft(it.getTimeLeft() - 1);
+                    if (it.timeLeft() > 0L) {
+                        it.setTimeLeft(it.timeLeft() - 1);
                         return false;
                     } else {
-                        it.getItem().remove();
+                        it.item().remove();
                         return true;
                     }
                 });
@@ -117,7 +139,7 @@ public class DropAnimationFactory implements AnimationFactory {
         }
 
         public void stop() {
-            this.droppedItems.forEach(item -> item.getItem().remove());
+            this.droppedItems.forEach(item -> item.item().remove());
             this.droppedItems.clear();
             Bukkit.getScheduler().cancelTask(this.taskId);
         }

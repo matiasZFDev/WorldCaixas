@@ -1,9 +1,9 @@
 package com.worldplugins.caixas.config.data.animation;
 
-import lombok.NonNull;
+import me.post.lib.util.Scheduler;
 import org.bukkit.Location;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 public interface AnimationFactory {
-    @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin);
+    @NotNull Animation create(@NotNull Scheduler scheduler, @NotNull Location origin);
 }

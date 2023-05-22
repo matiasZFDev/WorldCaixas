@@ -1,113 +1,131 @@
 package com.worldplugins.caixas.view;
 
-import com.worldplugins.caixas.extension.ViewExtensions;
-import com.worldplugins.caixas.rewards.ChanceReward;
-import com.worldplugins.lib.api.storage.item.configuration.shelving.ShelvingConfigurationItemStorage;
-import com.worldplugins.lib.api.storage.item.configuration.shelving.ShelvingItemKey;
-import com.worldplugins.lib.api.storage.item.view.PageContext;
-import com.worldplugins.lib.api.storage.item.view.PaginatedItemStorageView;
-import com.worldplugins.lib.extension.NumberExtensions;
-import com.worldplugins.lib.extension.bukkit.ColorExtensions;
-import com.worldplugins.lib.extension.bukkit.ItemExtensions;
-import com.worldplugins.lib.util.data.ItemBuilder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
+import com.worldplugins.caixas.NBTKeys;
+import com.worldplugins.caixas.config.data.storage.ChanceReward;
+import com.worldplugins.lib.util.storage.item.PersistentItemStorage;
+import com.worldplugins.lib.util.storage.item.StorageKey;
+import me.post.deps.nbt_api.nbtapi.NBTCompound;
+import me.post.lib.util.*;
+import me.post.lib.view.View;
+import me.post.lib.view.Views;
+import me.post.lib.view.action.ViewClick;
+import me.post.lib.view.action.ViewClose;
+import me.post.lib.view.helper.ClickHandler;
+import me.post.lib.view.helper.ViewContext;
+import me.post.lib.view.helper.impl.MapViewContext;
+import me.post.lib.view.helper.page.PageContextBuilder;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@ExtensionMethod({
-    ColorExtensions.class,
-    ItemExtensions.class,
-    ViewExtensions.class,
-    NumberExtensions.class
-})
+import static java.util.Objects.requireNonNull;
 
-@RequiredArgsConstructor
-public class CrateRewardsPageView extends PaginatedItemStorageView<ChanceReward, CrateRewardsPageView.Context> {
-    private final @NonNull ShelvingConfigurationItemStorage<ChanceReward> itemStorage;
+public class CrateRewardsPageView implements View {
+    public static class Context {
+        private final @NotNull String sectionId;
+        private final int page;
 
-    public static class Context extends PageContext {
-        @Getter
-        private final @NonNull String id;
-
-        public Context(int page, @NonNull String id) {
-            super(page);
-            this.id = id;
+        public Context(@NotNull String sectionId, int page) {
+            this.sectionId = sectionId;
+            this.page = page;
         }
     }
 
-    @Override
-    public @NonNull ChanceReward[] getItems(Context context) {
-        return itemStorage.getPageItems(context.id, context.getPage());
+    private final @NotNull ViewContext viewContext;
+    private final @NotNull PersistentItemStorage<ChanceReward> itemStorage;
+
+    public CrateRewardsPageView(@NotNull PersistentItemStorage<ChanceReward> itemStorage) {
+        this.viewContext = new MapViewContext();
+        this.itemStorage = itemStorage;
     }
 
     @Override
-    public @NonNull String getTitle(@NonNull Context context) {
-        return "Caixa '" + context.id + "' P. " + (context.getPage() + 1);
+    public void open(@NotNull Player player, @Nullable Object data) {
+        final Context context = (Context) requireNonNull(data);
+        final AtomicInteger rewardSlot = new AtomicInteger(0);
+
+        PageContextBuilder.of(
+                page -> Views.get().open(player, getClass(), new Context(context.sectionId, page)),
+                context.page,
+                6,
+                pageInfo ->"Caixa '" + context.sectionId + "' P." + pageInfo.page()
+            )
+            .withLayout(
+                "         ",
+                " OOOOOOO ",
+                " OOOOOOO ",
+                " OOOOOOO ",
+                " OOOOOOO ",
+                "         "
+            )
+            .fill(
+                Arrays.asList(itemStorage.getPageItems(context.sectionId, context.page)),
+                reward -> this.getBukkitItem(rewardSlot.getAndIncrement(), reward),
+                click -> {
+                    final int clickedRewardSlot = NBTs.getTagValue(
+                        requireNonNull(click.clickedItem()), NBTKeys.REWARD_SLOT, NBTCompound::getInteger
+                    );
+                    final StorageKey itemKey = new StorageKey(context.sectionId, context.page, clickedRewardSlot);
+
+                    if (click.clickType() == ClickType.SHIFT_RIGHT) {
+                        itemStorage.saveItem(itemKey, null);
+                        open(player, context);
+                        return;
+                    }
+
+                    if (click.clickType() == ClickType.LEFT) {
+                        final ChanceReward reward = itemStorage.getItem(itemKey);
+
+                        Views.get().open(player, CrateRewardEditView.class, new CrateRewardEditView.Context(
+                            context.sectionId, context.page, clickedRewardSlot, reward
+                        ));
+                    }
+                }
+            )
+            .build(this.viewContext, player, context);
     }
 
-    @Override
-    public int pageSize() {
-        return 36;
-    }
+    private @NotNull ItemStack getBukkitItem(int slot, @Nullable ChanceReward reward) {
+        final ItemStack item;
 
-    @Override
-    public @NonNull ItemStack getBukkitItem(ChanceReward reward) {
-        if (reward != null && reward.getBukkitItem() != null) {
-            final String chanceFormat = ((Double) reward.getChance()).plainFormat() + "%";
-            return reward.getBukkitItem()
-                .clone()
-                .lore(Arrays.asList(
+        if (reward != null) {
+            final String chanceFormat = Numbers.plainFormat(reward.chance()) + "%";
+            item = Items.modifyMeta(reward.bukkitItem().clone(), meta ->
+                meta.setLore(Colors.color(Arrays.asList(
                     "&8Uma das recompensas...",
                     "",
                     " &fChance: &e" + chanceFormat,
                     "",
                     "&fB. esquerdo: &7Editar recompensa",
-                    "&fB. direito + SHIFT: &7Remover recompensa"
-                ).color());
+                    "&fB. direito + SHIFT: &7Remover recompensa")
+                ))
+            );
+        } else {
+            item = ItemBuilder.of()
+                .material(Material.BARRIER)
+                .name(Colors.color("&cSlot vazio"))
+                .lore(Colors.color(Arrays.asList("&7Clique para modificar", "&7esse slot.")))
+                .build();
         }
 
-        return ItemBuilder.builder()
-            .id(160)
-            .data((short) 1)
-            .name("&cSlot vazio".color())
-            .lore(Arrays.asList("&7Clique para modificar", "&7esse slot.").color())
-            .build()
-            .create();
-    }
-
-    @NonNull
-    @Override
-    public Context buildContext(Context context, int newPage) {
-        System.out.println(newPage);
-        return new Context(newPage, context.id);
+        return NBTs.modifyTags(item, nbtItem ->
+            nbtItem.setInteger(NBTKeys.REWARD_SLOT, slot)
+        );
     }
 
     @Override
-    public void onTopClick(@NonNull InventoryClickEvent event) {
-        event.setCancelled(true);
+    public void onClick(@NotNull ViewClick click) {
+        ClickHandler.handleTopNonNull(viewContext, click);
+    }
 
-        final Player player = (Player) event.getWhoClicked();
-        final Context context = getContext(player);
-        final int slot = event.getSlot();
-        final ShelvingItemKey key = new ShelvingItemKey(context.id, context.getPage(), slot);
-
-        if (event.getClick() == ClickType.SHIFT_RIGHT) {
-            itemStorage.saveItem(key, null);
-            open(player, context);
-            return;
-        }
-
-        final Optional<ChanceReward> reward = itemStorage.getItem(key);
-        player.openView(CrateRewardEditView.class, new CrateRewardEditView.Context(
-            context.id, context.getPage(), slot, reward.orElse(null)
-        ));
+    @Override
+    public void onClose(@NotNull ViewClose close) {
+        viewContext.removeViewer(close.whoCloses().getUniqueId());
     }
 }

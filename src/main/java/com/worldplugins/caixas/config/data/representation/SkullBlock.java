@@ -1,36 +1,23 @@
 package com.worldplugins.caixas.config.data.representation;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import net.minecraft.server.v1_8_R3.TileEntitySkull;
+import com.worldplugins.lib.config.common.BlockData;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.SkullType;
-import org.bukkit.block.Skull;
-import org.bukkit.craftbukkit.v1_8_R3.block.CraftSkull;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
-
-@RequiredArgsConstructor
 public class SkullBlock implements MeasuredCrateRepresentation {
-    private final @NonNull String texture;
+    private final @NotNull ItemStack head;
+
+    public SkullBlock(@NotNull ItemStack head) {
+        this.head = head;
+    }
 
     @Override
-    public @NonNull CrateRepresentation.Handler spawn(@NonNull Plugin plugin, @NonNull Location location) {
-        location.getBlock().setType(Material.SKULL);
-        final Skull skull = (Skull) location.getBlock().getState();
-        skull.setSkullType(SkullType.PLAYER);
-        final TileEntitySkull skullTile = ((CraftSkull) skull).getTileEntity();
-        final GameProfile profile = new GameProfile(UUID.randomUUID(), null);
-        profile.getProperties().put("textures", new Property("textures", texture));
-        skullTile.setGameProfile(profile);
-        skull.update(true);
-        return () -> {
-            location.getBlock().setType(Material.AIR);
-        };
+    public @NotNull CrateRepresentation.Handler spawn(@NotNull Location location) {
+        final BlockData block = new BlockData(head);
+        block.set(location);
+        return () -> location.getBlock().setType(Material.AIR);
     }
 
     @Override

@@ -1,20 +1,22 @@
 package com.worldplugins.caixas.config.data.animation;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import me.post.lib.util.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
 public final class EffectAnimationFactory implements AnimationFactory {
-    private final @NonNull ConfigurationSection section;
+    private final @NotNull ConfigurationSection section;
+
+    public EffectAnimationFactory(@NotNull ConfigurationSection section) {
+        this.section = section;
+    }
 
     @Override
-    public @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin) {
+    public @NotNull Animation create(@NotNull Scheduler scheduler, @NotNull Location origin) {
         final ConfigurationSection positionSection = section.getConfigurationSection("Posicao");
         final Vector position = new Vector(
             positionSection.getDouble("X"),
@@ -24,19 +26,25 @@ public final class EffectAnimationFactory implements AnimationFactory {
         final Location location = origin.clone().add(0.5, 0.5, 0.5).add(position);
         final Effect effect = Effect.valueOf(this.section.getString("Id"));
         final short repetition = (short) section.getInt("Repeticao");
-        return new EffectAnimation(plugin, location, effect, repetition);
+        return new EffectAnimation(scheduler, location, effect, repetition);
     }
 
-    @RequiredArgsConstructor
     public static final class EffectAnimation implements Animation {
-        private final @NonNull Plugin plugin;
-        private final @NonNull Location location;
-        private final @NonNull Effect effect;
+        private final @NotNull Scheduler scheduler;
+        private final @NotNull Location location;
+        private final @NotNull Effect effect;
         private final long repetition;
         private int taskId = -1;
 
+        public EffectAnimation(@NotNull Scheduler scheduler, @NotNull Location location, @NotNull Effect effect, long repetition) {
+            this.scheduler = scheduler;
+            this.location = location;
+            this.effect = effect;
+            this.repetition = repetition;
+        }
+
         public void run() {
-            taskId = Bukkit.getScheduler().runTaskTimer(this.plugin, this::animation, 0L, repetition).getTaskId();
+            taskId = scheduler.runTimer(0L, repetition, false, this::animation).getTaskId();
         }
 
         private void animation() {

@@ -1,42 +1,44 @@
 package com.worldplugins.caixas.listener;
 
-import com.worldplugins.caixas.extension.ResponseExtensions;
 import com.worldplugins.caixas.manager.CrateManager;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.jetbrains.annotations.NotNull;
 
-@ExtensionMethod({
-    ResponseExtensions.class
-})
+import static com.worldplugins.caixas.Response.respond;
 
-@RequiredArgsConstructor
 public class CrateUnlocateListener implements Listener {
-    private final @NonNull CrateManager crateManager;
+    private final @NotNull CrateManager crateManager;
+
+    public CrateUnlocateListener(@NotNull CrateManager crateManager) {
+        this.crateManager = crateManager;
+    }
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
         final CrateManager.LocatedCrate crate = crateManager.getLocatedCrate(event.getBlock().getLocation());
 
-        if (crate == null)
-            return;
-
-        if (!event.getPlayer().hasPermission("worldcaixas.retirarcaixa")) {
-            event.setCancelled(true);
-            event.getPlayer().respond("Retirar-caixa-permissoes");
+        if (crate == null) {
             return;
         }
 
-        if (!event.getPlayer().isSneaking()) {
+        final Player player = event.getPlayer();
+
+        if (!player.hasPermission("worldcaixas.retirarcaixa")) {
             event.setCancelled(true);
-            event.getPlayer().respond("Retirar-caixa-shift");
+            respond(player, "Retirar-caixa-permissoes");
+            return;
+        }
+
+        if (!player.isSneaking()) {
+            event.setCancelled(true);
+            respond(player, "Retirar-caixa-shift");
             return;
         }
 
         crateManager.unlocateCrate(crate);
-        event.getPlayer().respond("Caixa-retirada");
+        respond(player, "Caixa-retirada");
     }
 }

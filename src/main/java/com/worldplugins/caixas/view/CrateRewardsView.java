@@ -1,121 +1,117 @@
 package com.worldplugins.caixas.view;
 
-import com.worldplugins.caixas.config.menu.CrateRewardsMenuContainer;
-import com.worldplugins.caixas.controller.RewardsController;
-import com.worldplugins.caixas.rewards.ChanceReward;
-import com.worldplugins.lib.common.Pair;
-import com.worldplugins.lib.config.cache.menu.ItemProcessResult;
-import com.worldplugins.lib.config.cache.menu.MenuData;
-import com.worldplugins.lib.config.cache.menu.MenuItem;
-import com.worldplugins.lib.extension.*;
-import com.worldplugins.lib.extension.bukkit.ItemExtensions;
-import com.worldplugins.lib.util.MenuItemsUtils;
-import com.worldplugins.lib.view.MenuDataView;
-import com.worldplugins.lib.view.ViewContext;
-import com.worldplugins.lib.view.annotation.ViewSpec;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
+import com.worldplugins.caixas.config.data.storage.ChanceReward;
+import com.worldplugins.lib.config.model.MenuModel;
+import com.worldplugins.lib.util.ItemBuilding;
+import com.worldplugins.lib.util.Strings;
+import com.worldplugins.lib.util.storage.item.PersistentItemStorage;
+import com.worldplugins.lib.view.PageConfigContextBuilder;
+import me.post.lib.util.Items;
+import me.post.lib.util.Numbers;
+import me.post.lib.view.View;
+import me.post.lib.view.Views;
+import me.post.lib.view.action.ViewClick;
+import me.post.lib.view.action.ViewClose;
+import me.post.lib.view.helper.ClickHandler;
+import me.post.lib.view.helper.ViewContext;
+import me.post.lib.view.helper.impl.MapViewContext;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@ExtensionMethod({
-    ReplaceExtensions.class,
-    GenericExtensions.class,
-    ItemExtensions.class,
-    CollectionExtensions.class,
-    NumberExtensions.class
-})
+import static java.util.Objects.requireNonNull;
+import static me.post.lib.util.Pairs.to;
 
-@RequiredArgsConstructor
-@ViewSpec(menuContainer = CrateRewardsMenuContainer.class)
-public class CrateRewardsView extends MenuDataView<CrateRewardsView.Context> {
-    @RequiredArgsConstructor
-    public static class Context implements ViewContext {
-        private final String crateId;
+public class CrateRewardsView implements View {
+    public static class Context {
+        private final @NotNull String crateId;
         private final int page;
-        private final int totalPages;
-        private final Collection<Pair<Integer, ChanceReward>> pageRewards;
 
-        @Override
-        public ViewContext viewDidOpen() {
-            return new Context(crateId, page, totalPages, null);
+        public Context(@NotNull String crateId, int page) {
+            this.crateId = crateId;
+            this.page = page;
         }
     }
 
-    private final @NonNull RewardsController rewardsController;
+    private final @NotNull ViewContext viewContext;
+    private final @NotNull MenuModel menuModel;
+    private final @NotNull PersistentItemStorage<ChanceReward> itemStorage;
+
+    public CrateRewardsView(@NotNull MenuModel menuModel, @NotNull PersistentItemStorage<ChanceReward> itemstorage) {
+        this.viewContext = new MapViewContext();
+        this.menuModel = menuModel;
+        this.itemStorage = itemstorage;
+    }
 
     @Override
-    public @NonNull ItemProcessResult processItems(
-        @NonNull Player player,
-        @NonNull Context context,
-        @NonNull MenuData menuData
-    ) {
-        return MenuItemsUtils.newSession(menuData.getItems(), session -> {
-            if (context.page == 0)
-                session.remove("Pagina-anterior");
+    public void open(@NotNull Player player, @Nullable Object data) {
+        final Context context = (Context) requireNonNull(data);
+        final List<Integer> pageSlots = menuModel.data().getData("Slots");
+        final AtomicInteger rewardIndex = new AtomicInteger(0);
 
-            if (context.page + 1 == context.totalPages)
-                session.remove("Pagina-seguinte");
-
-            session.addDynamics(() -> context.pageRewards
-                .mapIndexed((index, pair) -> {
-                    final int position = (index * context.page) + 1;
-                    final ItemStack item = pair.second().getBukkitItem();
-                    final ItemStack rewardItemModel = menuData.getData("Recompensa-iten");
-                    ItemStack rewardItem = item.clone()
-                        .name(rewardItemModel.getItemMeta().getDisplayName())
-                        .lore(rewardItemModel.getItemMeta().getLore())
-                        .loreFormat(
-                            "@posicao".to(String.valueOf(position)),
-                            "@chance".to(((Double) pair.second().getChance()).plainFormat())
+        PageConfigContextBuilder.of(
+                menuModel,
+                page -> Views.get().open(player, CrateRewardsView.class, new Context(context.crateId, page)),
+                context.page
+            )
+            .editTitle((pageInfo, title) -> Strings.replace(title,
+                to("@caixa", context.crateId),
+                to("@atual", String.valueOf(pageInfo.page() + 1)),
+                to("@totais", String.valueOf(pageInfo.totalPages()))
+            ))
+            .nextPageButtonAs("Pagina-seguinte")
+            .previousPageButtonAs("Pagina-anterior")
+            .withSlots(pageSlots)
+            .fill(
+                itemStorage.getAllItems(context.crateId),
+                reward -> {
+                    final int position = (rewardIndex.getAndIncrement() * context.page) + 1;
+                    final ItemStack item = reward.bukkitItem();
+                    final ItemStack rewardItemModel = menuModel.data().getData("Recompensa-iten");
+                    final ItemStack rewardItem = Items.modifyMeta(item.clone(), meta -> {
+                        final List<String> lore = Strings.replace(
+                            rewardItemModel.getItemMeta().getLore(),
+                            to("@posicao", String.valueOf(position)),
+                            to("@chance", Numbers.plainFormat(reward.chance()))
                         );
+                        meta.setDisplayName(rewardItemModel.getItemMeta().getDisplayName());
+                        meta.setLore(lore);
+                    });
 
                     if (!item.hasItemMeta()) {
-                        rewardItem.name(null);
-                        rewardItem = rewardItem.mutableLoreListFormat("@@lore", Collections.emptyList());
+                        Items.modifyMeta(rewardItem, meta -> meta.setDisplayName(null));
+                        ItemBuilding.loreListFormat(rewardItem, "@@lore", Collections.emptyList());
                     } else {
-                        if (item.getItemMeta().hasDisplayName())
-                            rewardItem.mutableNameFormat("@name".to(item.getItemMeta().getDisplayName()));
-                        else
-                            rewardItem.name(null);
+                        if (item.getItemMeta().hasDisplayName()) {
+                            ItemBuilding.nameFormat(rewardItem, to("@name", item.getItemMeta().getDisplayName()));
+                        } else {
+                            Items.modifyMeta(rewardItem, meta -> meta.setDisplayName(null));
+                        }
 
-                        rewardItem.mutableLoreListFormat("@@lore", item.getItemMeta().hasLore()
+                        ItemBuilding.loreListFormat(rewardItem, "@@lore", item.getItemMeta().hasLore()
                             ? item.getItemMeta().getLore()
                             : Collections.emptyList()
                         );
                     }
 
-                    return new MenuItem("Recompensa", pair.first(), rewardItem.inPlaceColorMeta(), null);
-                })
-            );
-        }).build();
+                    return rewardItem;
+                }
+            )
+            .build(viewContext, player, data);
     }
 
     @Override
-    public @NonNull String getTitle(@NonNull String title, @NonNull Context data, @NonNull MenuData menuData) {
-        return title.formatReplace(
-            "@caixa".to(data.crateId),
-            "@atual".to(String.valueOf(data.page + 1)),
-            "@totais".to(String.valueOf(data.totalPages))
-        );
+    public void onClick(@NotNull ViewClick click) {
+        ClickHandler.handleTopNonNull(viewContext, click);
     }
 
     @Override
-    public void onClick(@NonNull Player player, @NonNull MenuItem item, @NonNull InventoryClickEvent event) {
-        if (item.getId().equals("Pagina-seguinte")) {
-            final Context context = getContext(player);
-            rewardsController.updateView(player, context.crateId, context.page + 1);
-            return;
-        }
-
-        if (item.getId().equals("Pagina-anterior")) {
-            final Context context = getContext(player);
-            rewardsController.updateView(player, context.crateId, context.page - 1);
-        }
+    public void onClose(@NotNull ViewClose close) {
+        viewContext.removeViewer(close.whoCloses().getUniqueId());
     }
 }

@@ -1,31 +1,28 @@
 package com.worldplugins.caixas.conversation;
 
-import com.worldplugins.caixas.extension.ResponseExtensions;
-import com.worldplugins.caixas.extension.ViewExtensions;
-import com.worldplugins.caixas.rewards.ChanceReward;
+import com.worldplugins.caixas.config.data.storage.ChanceReward;
 import com.worldplugins.caixas.view.CrateRewardEditView;
-import com.worldplugins.lib.extension.bukkit.ColorExtensions;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
+import me.post.lib.util.Colors;
+import me.post.lib.util.NumberFormats;
+import me.post.lib.view.Views;
 import org.bukkit.conversations.ConversationContext;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
-@ExtensionMethod({
-    ColorExtensions.class,
-    ResponseExtensions.class,
-    ViewExtensions.class
-})
+import static com.worldplugins.caixas.Response.respond;
 
-@RequiredArgsConstructor
 public class RewardChanceConversation extends StringPrompt {
-    private final @NonNull CrateRewardEditView.Context currentContext;
+    private final @NotNull CrateRewardEditView.Context currentContext;
+
+    public RewardChanceConversation(@NotNull CrateRewardEditView.Context currentContext) {
+        this.currentContext = currentContext;
+    }
 
     @Override
     public String getPromptText(ConversationContext context) {
-        return "&eInsira a chance dessa recompensa:".color();
+        return Colors.color("&eInsira a chance dessa recompensa:");
     }
 
     @Override
@@ -33,28 +30,28 @@ public class RewardChanceConversation extends StringPrompt {
         final Player player = (Player) context.getForWhom();
 
         if (value.equals("CANCELAR")) {
-            player.respond("Operacao-cancelada");
+            respond(player, "Operacao-cancelada");
             return null;
         }
 
-        final Double chance = parseDouble(value);
+        final Double chance = NumberFormats.isValidDecimal(value)
+            ? Double.parseDouble(value)
+            : null;
 
         if (chance == null) {
-            player.respond("Recompensa-editar-chance-invalida");
+            respond(player, "Recompensa-editar-chance-invalida");
             return null;
         }
 
-        player.openView(CrateRewardEditView.class, currentContext.changeReward(
-            new ChanceReward(currentContext.getCurrentReward().getBukkitItem(), chance)
+        if (currentContext.currentReward() == null) {
+            player.sendMessage("&cOcorreu um erro. Tente novamente.");
+            Views.get().open(player, CrateRewardEditView.class, currentContext.changeReward(null));
+            return null;
+        }
+
+        Views.get().open(player, CrateRewardEditView.class, currentContext.changeReward(
+            new ChanceReward(currentContext.currentReward().bukkitItem() , chance)
         ));
         return null;
-    }
-
-    private Double parseDouble(@NonNull String value) {
-        try {
-            return Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 }

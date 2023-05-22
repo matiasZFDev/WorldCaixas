@@ -1,35 +1,56 @@
 package com.worldplugins.caixas.config;
 
-import com.worldplugins.lib.config.cache.InjectedConfigCache;
-import com.worldplugins.lib.config.cache.annotation.ConfigSpec;
-import com.worldplugins.lib.extension.CollectionExtensions;
-import com.worldplugins.lib.extension.GenericExtensions;
-import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
-import lombok.NonNull;
-import lombok.experimental.ExtensionMethod;
+import com.worldplugins.caixas.config.data.storage.ChanceRewardsStorage;
+import com.worldplugins.caixas.config.data.storage.ChanceReward;
+import com.worldplugins.lib.util.ConfigSections;
+import com.worldplugins.lib.util.storage.item.ItemPage;
+import com.worldplugins.lib.util.storage.item.ItemStorageSection;
+import com.worldplugins.lib.util.storage.item.StorageData;
+import com.worldplugins.lib.util.storage.item.impl.ListedItemStorageSection;
+import com.worldplugins.lib.util.storage.item.impl.SimpleItemPage;
+import me.post.lib.config.model.ConfigModel;
+import me.post.lib.config.wrapper.ConfigWrapper;
+import me.post.lib.util.BukkitSerializer;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@ExtensionMethod(value = {
-    ConfigurationExtensions.class,
-    GenericExtensions.class,
-    CollectionExtensions.class
-}, suppressBaseMethods = false)
+public class RewardsDataConfig implements ConfigModel<StorageData<ChanceReward>> {
+    private @UnknownNullability StorageData<ChanceReward> data;
+    private final @NotNull ConfigWrapper configWrapper;
 
-public class RewardsDataConfig implements InjectedConfigCache<Map<String, List<String>>> {
-    @ConfigSpec(path = "recompensas")
-    public @NonNull Map<String, List<String>> transform(@NonNull FileConfiguration config) {
-        return config.getConfigurationSection("Data")
-            .mapWithKeys((key, section) -> {
-                final List<String> pages = ((Stream<String>) section.getKeys(false).stream())
-                    .map(section::getString)
+    public RewardsDataConfig(@NotNull ConfigWrapper configWrapper) {
+        this.configWrapper = configWrapper;
+    }
+
+    @Override
+    public void update() {
+        final FileConfiguration config = configWrapper.unwrap();
+        final Collection<ItemStorageSection<ChanceReward>> sections = ConfigSections.mapWithKeys(
+            config,
+            (key, section) -> {
+                final List<ItemPage<ChanceReward>> pages = section.getKeys(false).stream()
+                    .map(pageKey -> new SimpleItemPage<>(
+                            (ChanceReward[]) BukkitSerializer.deserialize(section.getString(pageKey))
+                        )
+                    )
                     .collect(Collectors.toList());
-                return key.to(pages);
-            })
-            .toMap();
+                return new ListedItemStorageSection<>(key, pages);
+            });
+        data = new ChanceRewardsStorage(sections);
+    }
+
+    @Override
+    public @NotNull StorageData<ChanceReward> data() {
+        return data;
+    }
+
+    @Override
+    public @NotNull ConfigWrapper wrapper() {
+        return configWrapper;
     }
 }

@@ -1,24 +1,24 @@
 package com.worldplugins.caixas.config.data.representation;
 
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
-@RequiredArgsConstructor
 public class NormalBlock implements MeasuredCrateRepresentation {
-    private final Material material;
+    private final @NotNull Material material;
     private final byte data;
+
+    public NormalBlock(@NotNull Material material, byte data) {
+        this.material = material;
+        this.data = data;
+    }
 
     @Override
     @SuppressWarnings("deprecation")
-    public @NonNull CrateRepresentation.Handler spawn(@NonNull Plugin plugin, @NonNull Location location) {
+    public @NotNull CrateRepresentation.@NotNull Handler spawn(@NotNull Location location) {
         location.getBlock().setType(material);
         location.getBlock().setData(data);
-        return () -> {
-            location.getBlock().setType(Material.AIR);
-        };
+        return () -> location.getBlock().setType(Material.AIR);
     }
 
     @Override

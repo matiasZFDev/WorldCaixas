@@ -1,6 +1,7 @@
 Nome: 'Caixa @caixa (@atual/@totais)'
 Linhas: 6
 Data:
+  Slots: [10,11,12,13,14,15,16, 19,20,21,22,23,24,25] # Slots por pagina
   Recompensa-iten:
     Id: 1 # Dinamico
     Nome: '@nome'

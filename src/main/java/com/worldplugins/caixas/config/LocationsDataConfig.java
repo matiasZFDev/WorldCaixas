@@ -1,29 +1,42 @@
 package com.worldplugins.caixas.config;
 
 import com.worldplugins.caixas.config.data.LocationsData;
-import com.worldplugins.lib.config.cache.InjectedConfigCache;
-import com.worldplugins.lib.config.cache.annotation.ConfigSpec;
-import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
-import lombok.NonNull;
-import lombok.experimental.ExtensionMethod;
+import me.post.lib.config.model.ConfigModel;
+import me.post.lib.config.wrapper.ConfigWrapper;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.stream.Collectors;
 
-@ExtensionMethod({
-    ConfigurationExtensions.class
-})
+public class LocationsDataConfig implements ConfigModel<LocationsData> {
+    private @UnknownNullability LocationsData data;
+    private final @NotNull ConfigWrapper configWrapper;
 
-public class LocationsDataConfig implements InjectedConfigCache<LocationsData> {
-    @ConfigSpec(path = "localizacoes")
-    public @NonNull LocationsData transform(@NonNull FileConfiguration config) {
+    public LocationsDataConfig(@NotNull ConfigWrapper configWrapper) {
+        this.configWrapper = configWrapper;
+    }
+
+    @Override
+    public void update() {
+        final FileConfiguration config = configWrapper.unwrap();
         final ConfigurationSection section = config.getConfigurationSection("Data");
-        return new LocationsData(
+        data = new LocationsData(
             section.getKeys(false).stream()
                 .map(key -> new LocationsData.CrateLocation(key, (Location) section.get(key)))
                 .collect(Collectors.toList())
         );
+    }
+
+    @Override
+    public @NotNull LocationsData data() {
+        return data;
+    }
+
+    @Override
+    public @NotNull ConfigWrapper wrapper() {
+        return configWrapper;
     }
 }

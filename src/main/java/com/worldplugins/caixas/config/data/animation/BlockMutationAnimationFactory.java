@@ -1,43 +1,43 @@
 package com.worldplugins.caixas.config.data.animation;
 
-import com.worldplugins.lib.config.data.BlockData;
-import com.worldplugins.lib.extension.bukkit.ConfigurationExtensions;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.ExtensionMethod;
+import com.worldplugins.lib.config.common.BlockData;
+import com.worldplugins.lib.util.ConfigSections;
+import me.post.lib.util.Scheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@ExtensionMethod({
-    ConfigurationExtensions.class
-})
-
-@RequiredArgsConstructor
 public class BlockMutationAnimationFactory implements AnimationFactory {
-    private final @NonNull ConfigurationSection section;
+    private final @NotNull ConfigurationSection section;
+
+    public BlockMutationAnimationFactory(@NotNull ConfigurationSection section) {
+        this.section = section;
+    }
 
     @Override
-    public @NonNull Animation create(@NonNull Plugin plugin, @NonNull Location origin) {
+    public @NotNull Animation create(@NotNull Scheduler scheduler, @NotNull Location origin) {
         return new BlockMutationAnimation(
-            plugin,
+            scheduler,
             origin,
             section.getLong("Duracao"),
             section.getLong("Delay"),
             section.getLong("Pausa"),
-            section.getConfigurationSection("Blocos").map(section -> section.blockData())
+            ConfigSections.map(
+                section.getConfigurationSection("Blocos"),
+                section -> new BlockData(ConfigSections.getItem(section))
+            )
         );
     }
 
     public static class BlockMutationAnimation implements Animation {
-        private final @NonNull Plugin plugin;
-        private final @NonNull Location location;
-        private final @NonNull BlockData originBlock;
+        private final @NotNull Scheduler scheduler;
+        private final @NotNull Location location;
+        private final @NotNull BlockData originBlock;
         private final long duration;
         private long timeLeft;
         private final long delay;
@@ -49,14 +49,14 @@ public class BlockMutationAnimationFactory implements AnimationFactory {
 
         @SuppressWarnings("deprecation")
         public BlockMutationAnimation(
-            @NonNull Plugin plugin,
-            @NonNull Location location,
+            @NotNull Scheduler scheduler,
+            @NotNull Location location,
             long duration,
             long delay,
             long pause,
-            @NonNull List<BlockData> blocks
+            @NotNull List<BlockData> blocks
         ) {
-            this.plugin = plugin;
+            this.scheduler = scheduler;
             this.location = location;
             this.originBlock = new BlockData(new ItemStack(
                 location.getBlock().getType(), location.getBlock().getData()
@@ -72,7 +72,7 @@ public class BlockMutationAnimationFactory implements AnimationFactory {
 
         @Override
         public void run() {
-            taskId = Bukkit.getScheduler().runTaskTimer(plugin, this::animation, 1L, 1L).getTaskId();
+            taskId = scheduler.runTimer(1L, 1L, false, this::animation).getTaskId();
         }
 
         @SuppressWarnings("deprecation")
@@ -99,8 +99,8 @@ public class BlockMutationAnimationFactory implements AnimationFactory {
                 BlockData block = blocks.get(index);
 
                 if (
-                    block.getItem().getType() == location.getBlock().getType() &&
-                    block.getItem().getDurability() == location.getBlock().getData()
+                    block.item().getType() == location.getBlock().getType() &&
+                    block.item().getDurability() == location.getBlock().getData()
                 ) {
                     index++;
 
