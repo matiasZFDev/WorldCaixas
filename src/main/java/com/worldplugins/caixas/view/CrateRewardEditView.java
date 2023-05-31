@@ -12,10 +12,10 @@ import me.post.lib.view.Views;
 import me.post.lib.view.action.ClickPosition;
 import me.post.lib.view.action.ViewClick;
 import me.post.lib.view.action.ViewClose;
-import me.post.lib.view.helper.ClickHandler;
-import me.post.lib.view.helper.ContextBuilder;
-import me.post.lib.view.helper.ViewContext;
-import me.post.lib.view.helper.impl.MapViewContext;
+import me.post.lib.view.context.ClickHandler;
+import me.post.lib.view.context.ViewContext;
+import me.post.lib.view.context.builder.ContextBuilder;
+import me.post.lib.view.context.impl.MapViewContext;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +67,8 @@ public class CrateRewardEditView implements View {
             ? "0%"
             : Numbers.plainFormat(reward.chance()) + "%";
 
-        ContextBuilder.of(4, "Caixa '" + context.id + "' P." + (context.page + 1) + " S." + context.slot)
+        ContextBuilder
+            .of(4, "Caixa '" + context.id + "' P." + (context.page + 1) + " S." + context.slot)
             .item(
                 12,
                 reward != null

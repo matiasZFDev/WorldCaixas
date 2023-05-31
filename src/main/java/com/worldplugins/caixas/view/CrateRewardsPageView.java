@@ -10,10 +10,10 @@ import me.post.lib.view.View;
 import me.post.lib.view.Views;
 import me.post.lib.view.action.ViewClick;
 import me.post.lib.view.action.ViewClose;
-import me.post.lib.view.helper.ClickHandler;
-import me.post.lib.view.helper.ViewContext;
-import me.post.lib.view.helper.impl.MapViewContext;
-import me.post.lib.view.helper.page.PageContextBuilder;
+import me.post.lib.view.context.ClickHandler;
+import me.post.lib.view.context.ViewContext;
+import me.post.lib.view.context.builder.PageContextBuilder;
+import me.post.lib.view.context.impl.MapViewContext;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -50,7 +50,8 @@ public class CrateRewardsPageView implements View {
         final Context context = (Context) requireNonNull(data);
         final AtomicInteger rewardSlot = new AtomicInteger(0);
 
-        PageContextBuilder.of(
+        PageContextBuilder
+            .of(
                 page -> Views.get().open(player, getClass(), new Context(context.sectionId, page)),
                 context.page,
                 6,
