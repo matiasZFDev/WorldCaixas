@@ -76,7 +76,7 @@ public class CrateRewardsPageView implements View {
 
                     if (click.clickType() == ClickType.SHIFT_RIGHT) {
                         itemStorage.saveItem(itemKey, null);
-                        open(player, context);
+                        Views.get().open(player, CrateRewardsPageView.class, context);
                         return;
                     }
 

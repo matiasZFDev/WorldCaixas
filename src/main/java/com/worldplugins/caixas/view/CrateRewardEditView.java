@@ -82,7 +82,7 @@ public class CrateRewardEditView implements View {
                         return;
                     }
 
-                    open(player, context.changeReward(null));
+                    Views.get().open(player, CrateRewardEditView.class, context.changeReward(null));
                 }
             )
             .item(
