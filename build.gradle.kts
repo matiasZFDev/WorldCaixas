@@ -21,7 +21,7 @@ val projectFullName = "${project.name}-LATEST.jar"
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
-    compileOnly(files("/home/post/dev/bukkit-libs/WorldLib-LATEST.jar"))
+    compileOnly("com.worldplugins:WorldLib:LATEST")
     compileOnly("me.filoghost.holographicdisplays:holographicdisplays-api:3.0.0")
 }
 
